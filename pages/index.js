@@ -5,10 +5,17 @@ import Head from "next/head";
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 import { CSVLink, CSVDownload } from "react-csv";
 import { useEffect, useState } from "react";
+import ActionBar from "../components/ActionBar";
+import ConfirmModal from "../components/ConfirmModal";
+import InfoModal from "../components/InfoModal";
+import CapacityDataPointInfo from "../components/CapacityDataPointInfo";
+import { date_format, time_format } from "../utilities/dates";
 
 export default function Dashboard({ data, loading }) {
   const [csvData, setCsvData] = useState([]);
   const [tableData, setTableData] = useState();
+  const [terminals, setTerminals] = useState();
+  const [selectedTerminal, setSelectedTerminal] = useState();
 
   const headers = [
     { label: "id", key: "id" },
@@ -30,6 +37,13 @@ export default function Dashboard({ data, loading }) {
     setTableData(json.capacity_data);
   };
 
+  const refreshTerminals = async () => {
+    const resp = await fetch("/api/get-terminals");
+    const json = await resp.json();
+
+    setTerminals(json.terminal);
+  };
+
   function timeout(delay) {
     return new Promise((res) => setTimeout(res, delay));
   }
@@ -44,9 +58,15 @@ export default function Dashboard({ data, loading }) {
   useEffect(() => {
     (async () => {
       refreshData();
+      refreshTerminals();
     })();
   }, []);
 
+  useEffect(() => {
+    if (terminals) {
+      setSelectedTerminal(terminals[0]);
+    }
+  }, [terminals]);
   return (
     <div
       style={{
@@ -61,6 +81,7 @@ export default function Dashboard({ data, loading }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
+      {/* TODO: move css to file */}
       <main
         style={{
           minHeight: "100vh",
@@ -88,11 +109,22 @@ export default function Dashboard({ data, loading }) {
             Refresh Table
           </button>
         </div>
-        <span style={{ textAlign: "left", marginBottom: "0.5rem" }}>
-          Note: This table only displays the 1000 newest entries. Download
-          button will download entire dataset.
-        </span>
-        {!tableData && <span>Data is Loading...</span>}
+        <div className="flex flex-row" style={{ flexShrink: "0", flexGrow: 1 }}>
+        {!tableData ? ( <span>Data is Loading...</span>) : (
+          <span style={{ textAlign: "left", marginBottom: "0.5rem" }}>
+            Note: This table only displays the 1000 newest entries. Download
+            button will download entire dataset.
+          </span>
+        )}
+          {terminals && (
+            <ActionBar
+              terminals={terminals}
+              selectedTerminal={selectedTerminal}
+              onChange={(e) => setSelectedTerminal(e.target.value)}
+            />
+          )}
+        </div>
+        
         {tableData && (
           <table>
             <thead>
@@ -100,8 +132,9 @@ export default function Dashboard({ data, loading }) {
                 <th>Id</th>
                 <th>Crossing Name</th>
                 <th colSpan="2">Date/Time of Sailing</th>
-                <th className="center">Capacity (% Available)</th>
-                <th colSpan="2">Date (yyyy-mm-dd) / Time Recorded</th>
+                <th className="center">Capacity (Available)</th>
+                <th colSpan="2">Date / Time Recorded</th>
+                <th className="center">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -109,11 +142,30 @@ export default function Dashboard({ data, loading }) {
                 <tr key={row.id}>
                   <td className="right">{row.id}</td>
                   <td className="left">{row.crossing_name}</td>
-                  <td className="right">{row.date_of_sailing}</td>
-                  <td className="right">{row.time_of_sailing}</td>
+                  <td className="right" style={{ borderRight: "none" }}>
+                    {date_format(row.date_of_sailing)}
+                  </td>
+                  <td className="right" style={{ borderLeft: "none" }}>
+                    {time_format(
+                      row.date_of_sailing + " " + row.time_of_sailing,
+                    )}
+                  </td>
                   <td className="center">{row.percent_available} %</td>
-                  <td className="right">{row.date_recorded}</td>
-                  <td className="right">{row.time_recorded}</td>
+                  <td className="right">{date_format(row.date_recorded)}</td>
+                  <td className="right">
+                    {time_format(row.date_recorded + " " + row.time_recorded)}{" "}
+                  </td>
+                  <td className="right">
+                    <div
+                      className="flex flex-row justify-center align-center"
+                      style={{ width: "6rem" }}
+                    >
+                      {/* <ConfirmModal message={`Are you sure you want to delete ${row.crossing_name}`} onConfirm={() => (console.log("CONGIMED"))} /> */}
+                      <InfoModal>
+                        <CapacityDataPointInfo datapoint={row} />
+                      </InfoModal>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
