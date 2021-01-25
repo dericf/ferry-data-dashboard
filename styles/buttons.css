@@ -1,8 +1,11 @@
-button {
-	flex-grow: 0;
-	flex-shrink: 1;
-	height: 2rem;
+button.download-button {
 	margin-left: 2rem;
-	background-color: rgb(36, 126, 206);
-	color: #FFFFFF;
+	padding: 0.5rem 1.5rem;
+}
+
+button.download-button:hover {
+	margin-left: 2rem;
+	padding: 0.5rem 1.5rem;
+	opacity: 0.8;
+	cursor: pointer;
 }
