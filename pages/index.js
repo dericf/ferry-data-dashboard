@@ -3,10 +3,13 @@
 */
 import Head from "next/head";
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
-import { CSVLink } from "react-csv";
+import { CSVLink, CSVDownload } from "react-csv";
+import { useEffect, useState } from "react";
 
 export default function Dashboard({ data, loading }) {
-  
+  const [csvData, setCsvData] = useState([]);
+  const [tableData, setTableData] = useState();
+
   const headers = [
     { label: "id", key: "id" },
     { label: "crossing_name", key: "crossing_name" },
@@ -18,7 +21,35 @@ export default function Dashboard({ data, loading }) {
     { label: "updated_at", key: "updated_at" },
   ];
 
-  let formatted_date_string = new Date().toUTCString().replace(/ /g, "_").replace(/,/g, "").replace(/:/g, "_")
+  // let formatted_date_string = new Date().toUTCString().replace(/ /g, "_").replace(/,/g, "").replace(/:/g, "_")
+
+
+  const refreshData = async () => {
+    const resp = await fetch("/api/get-limited-data");
+    const json = await resp.json();
+    
+    setTableData(json.capacity_data)
+  }
+
+  
+  const download = async (event, done) => {
+    const resp = await fetch("/api/downloadcsv");
+    const json = await resp.json();
+    console.log("Response: ", json)
+    setCsvData(json.capacity_data)
+    setTimeout(() => {
+      done(); // REQUIRED to invoke the logic of component
+      
+    }, 2000);
+  }
+
+  useEffect(() => {
+    (async () =>{
+      refreshData()
+    }
+    )()
+    
+  }, [])
 
   return (
     <div
@@ -51,30 +82,44 @@ export default function Dashboard({ data, loading }) {
           <h1 style={{ textAlign: "center" }}>Capacity Data</h1>
           {/* <button className="button" onClick={downloadData}>Download</button> */}
           {!loading && (
-            <CSVLink className="button" data={data} headers={headers} filename={`ferry-data-${formatted_date_string}.csv`} download={`ferry-data-${formatted_date_string}.csv`}>
-              Download me
+            <CSVLink data={csvData} headers={headers} asyncOnClick={true} filename={`ferry-data.csv`} onClick={(event, done)=>(download(event, done))}>
+              <button className="download-button">
+                Download All Data as CSV
+              </button>
             </CSVLink>
-          )}
-        </div>
 
-        {!loading && (
+          )}
+            <button className="download-button" onClick={refreshData}>
+              Refresh Table
+            </button>
+        </div>
+        <span style={{textAlign:"left", marginBottom:"0.5rem"}}>Note: This table only displays the 1000 newest entries. Download button will download entire dataset.</span>
+        {!tableData && (
+          <span>Data is Loading...</span>
+        )}
+        {tableData && (
           <table>
             <thead>
               <tr>
+                <th>Id</th>
                 <th>Crossing Name</th>
                 <th>Time of Sailing</th>
                 <th className="center">Capacity (% Available)</th>
-                <th>Date / Time Recorded</th>
+                <th colSpan="2">Date (yyyy-mm-dd) / Time Recorded</th>
               </tr>
             </thead>
             <tbody>
-              {data.map((row) => (
+              {tableData.map((row) => (
                 <tr key={row.id}>
+                  <td className="right">{row.id}</td>
                   <td className="left">{row.crossing_name}</td>
                   <td className="right">{row.time_of_sailing}</td>
-                  <td className="center">% {row.percent_available}</td>
+                  <td className="center">{row.percent_available} %</td>
                   <td className="right">
-                    {row.date_recorded} at {row.time_recorded}
+                    {row.date_recorded}
+                  </td>
+                  <td className="right">
+                    {row.time_recorded}
                   </td>
                 </tr>
               ))}
@@ -84,41 +129,4 @@ export default function Dashboard({ data, loading }) {
       </main>
     </div>
   );
-}
-
-export async function getStaticProps() {
-  const client = new ApolloClient({
-    uri: "https://ferry-data.hasura.app/v1/graphql",
-    headers: {
-      "x-hasura-admin-secret": process.env.HASURA_GRAPHQL_ADMIN_SECRET,
-    },
-    cache: new InMemoryCache(),
-  });
-
-  const { data, loading } = await client.query({
-    query: gql`
-      query GetCapacityData {
-        capacity_data(order_by: { crossing_name: asc }) {
-          created_at
-          crossing_name
-          date_recorded
-          id
-          percent_available
-          time_of_sailing
-          time_recorded
-          updated_at
-        }
-      }
-    `,
-  });
-  console.log("data: ");
-  console.log(data);
-
-  return {
-    props: {
-      data: data.capacity_data,
-      loading: loading,
-    },
-    revalidate: 30,
-  };
 }
