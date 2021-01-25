@@ -21,6 +21,7 @@ export default async (req, res) => {
           id
           percent_available
           time_of_sailing
+          date_of_sailing
           time_recorded
           updated_at
         }
