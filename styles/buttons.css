@@ -1,11 +1,22 @@
+button {
+	padding: 0.5rem 1.5rem;
+	border-radius: 0.25rem;
+}
+
+button:hover {
+	cursor: pointer;
+	opacity: 0.8;
+}
+
 button.download-button {
 	margin-left: 2rem;
-	padding: 0.5rem 1.5rem;
 }
 
 button.download-button:hover {
-	margin-left: 2rem;
-	padding: 0.5rem 1.5rem;
 	opacity: 0.8;
-	cursor: pointer;
+}
+
+button.info-modal-button {
+	font-size: larger;
+
 }
