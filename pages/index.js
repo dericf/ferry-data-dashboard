@@ -1,65 +1,124 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+/*
+  * https://www.npmjs.com/package/react-csv
+*/
+import Head from "next/head";
+import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
+import { CSVLink } from "react-csv";
 
-export default function Home() {
+export default function Dashboard({ data, loading }) {
+  
+  const headers = [
+    { label: "id", key: "id" },
+    { label: "crossing_name", key: "crossing_name" },
+    { label: "time_of_sailing", key: "time_of_sailing" },
+    { label: "date_recorded", key: "date_recorded" },
+    { label: "time_recorded", key: "time_recorded" },
+    { label: "percent_available", key: "percent_available" },
+    { label: "created_at", key: "created_at" },
+    { label: "updated_at", key: "updated_at" },
+  ];
+
+  let formatted_date_string = new Date().toUTCString().replace(/ /g, "_").replace(/,/g, "").replace(/:/g, "_")
+
   return (
-    <div className={styles.container}>
+    <div
+      style={{
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
       <Head>
-        <title>Create Next App</title>
+        <title>Ferry Data Dashboard</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+      <main
+        style={{
+          minHeight: "50vh",
+          width: "100vw",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#303030",
+          color: "white",
+          padding: "2rem",
+        }}
+      >
+        <div className="flex flex-center align-center">
+          <h1 style={{ textAlign: "center" }}>Capacity Data</h1>
+          {/* <button className="button" onClick={downloadData}>Download</button> */}
+          {!loading && (
+            <CSVLink className="button" data={data} headers={headers} filename={`ferry-data-${formatted_date_string}.csv`} download={`ferry-data-${formatted_date_string}.csv`}>
+              Download me
+            </CSVLink>
+          )}
         </div>
-      </main>
 
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
+        {!loading && (
+          <table>
+            <thead>
+              <tr>
+                <th>Crossing Name</th>
+                <th>Time of Sailing</th>
+                <th className="center">Capacity (% Available)</th>
+                <th>Date / Time Recorded</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((row) => (
+                <tr key={row.id}>
+                  <td className="left">{row.crossing_name}</td>
+                  <td className="right">{row.time_of_sailing}</td>
+                  <td className="center">% {row.percent_available}</td>
+                  <td className="right">
+                    {row.date_recorded} at {row.time_recorded}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </main>
     </div>
-  )
+  );
+}
+
+export async function getStaticProps() {
+  const client = new ApolloClient({
+    uri: "https://ferry-data.hasura.app/v1/graphql",
+    headers: {
+      "x-hasura-admin-secret": process.env.HASURA_GRAPHQL_ADMIN_SECRET,
+    },
+    cache: new InMemoryCache(),
+  });
+
+  const { data, loading } = await client.query({
+    query: gql`
+      query GetCapacityData {
+        capacity_data(order_by: { crossing_name: asc }) {
+          created_at
+          crossing_name
+          date_recorded
+          id
+          percent_available
+          time_of_sailing
+          time_recorded
+          updated_at
+        }
+      }
+    `,
+  });
+  console.log("data: ");
+  console.log(data);
+
+  return {
+    props: {
+      data: data.capacity_data,
+      loading: loading,
+    },
+    revalidate: 30,
+  };
 }
