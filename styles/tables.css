@@ -1,0 +1,46 @@
+/* table {
+
+} */
+
+thead > tr {
+	background-color: #FFFFFF;
+	color: #000000;
+}
+tbody {
+	margin-top: 1rem;
+}
+
+th {
+	padding-left: 2rem;
+	padding-right: 2rem;
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+}
+
+td {
+	padding-left: 2rem;
+	padding-right: 2rem;
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+}
+
+td.left {
+	text-align: left;
+}
+
+td.right {
+	text-align: right;
+}
+
+td.center {
+	text-align: center;
+}
+
+
+tbody > tr:nth-last-of-type(odd) {
+	background-color:#636565;
+}
+
+tbody >  tr:nth-last-of-type(even) {
+	background-color:#3a3939;
+}
