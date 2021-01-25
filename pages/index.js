@@ -109,12 +109,12 @@ export default function Dashboard({ data, loading }) {
             Refresh Table
           </button>
         </div>
-        <div className="flex flex-row" style={{ flexShrink: "0", flexGrow: 1 }}>
-        {!tableData ? ( <span>Data is Loading...</span>) : (
-          <span style={{ textAlign: "left", marginBottom: "0.5rem" }}>
+        <div className="flex flex-row" style={{ flexShrink: "0", flexGrow: 1}}>
+        {!tableData ? ( <p>Data is Loading...</p>) : (
+          <p style={{ textAlign: "left", marginBottom: "0.5rem" }}>
             Note: This table only displays the 1000 newest entries. Download
-            button will download entire dataset.
-          </span>
+            button will download entire datet.
+          </p>
         )}
           {terminals && (
             <ActionBar
