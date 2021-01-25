@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.3.7",
+    "@mr-yum/react-csv": "^2.1.0",
     "graphql": "^15.4.0",
     "next": "10.0.5",
     "react": "17.0.1",
