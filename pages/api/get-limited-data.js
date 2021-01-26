@@ -14,7 +14,7 @@ export default async (req, res) => {
   const { data, loading } = await client.query({
     query: gql`
       query GetCapacityData {
-        capacity_data(order_by: {id: asc, crossing_name: asc, date_recorded: asc, time_recorded: asc }, limit: 1000) {
+        capacity_data(order_by: {id: desc, crossing_name: asc, date_recorded: asc, time_recorded: asc }, limit: 100) {
           created_at
           crossing_name
           date_recorded
