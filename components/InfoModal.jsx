@@ -13,7 +13,7 @@ export default function InfoModal({ ...props }) {
 
       {showModal && (
         <div
-          className="flex flex-col align-center"
+          className="flex flex-col align-center modal-content"
           style={{
             position: "absolute",
             left: 0,
