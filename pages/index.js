@@ -97,9 +97,10 @@ export default function Dashboard({ data, loading }) {
           padding: "2rem",
         }}
       >
-        <div className="flex flex-center align-center">
-          <h1 style={{ textAlign: "center" }}>Capacity Data</h1>
+        <div className="flex flex-row justify-center align-center flex-wrap">
+          <h1 style={{ textAlign: "center" }}>Ferry Capacity Data</h1>
           {/* <button className="button" onClick={downloadData}>Download</button> */}
+          <div className="flex flex-row justify-center-align-center">
           {!loading && (
             <button className="download-button" onClick={download}>
               Download All Data as CSV
@@ -108,11 +109,12 @@ export default function Dashboard({ data, loading }) {
           <button className="download-button" onClick={refreshData}>
             Refresh Table
           </button>
+          </div>
         </div>
         <div className="flex flex-row" style={{ flexShrink: "0", flexGrow: 1}}>
         {!tableData ? ( <p>Data is Loading...</p>) : (
           <p style={{ textAlign: "left", marginBottom: "0.5rem" }}>
-            Note: This table only displays the 1000 newest entries. Download
+            Note: This table only displays the 100 newest entries. Download
             button will download entire datet.
           </p>
         )}
@@ -126,7 +128,8 @@ export default function Dashboard({ data, loading }) {
         </div>
         
         {tableData && (
-          <table>
+          <div style={{overflowX: "auto", maxWidth: "95vw"}}>
+          <table >
             <thead>
               <tr>
                 <th>Id</th>
@@ -170,6 +173,7 @@ export default function Dashboard({ data, loading }) {
               ))}
             </tbody>
           </table>
+          </div>
         )}
         {csvData.length > 0 && (
           <CSVDownload

@@ -10,10 +10,35 @@
 	flex-direction: row;
 }
 
+.flex-wrap {
+	flex-wrap: wrap;
+}
+
+.flex-nowrap {
+	flex-wrap: nowrap;
+}
+
+
 .justify-center {
 	justify-content: center;
 }
 
+.justify-start {
+	justify-content: start;
+}
+
+.justify-end {
+	justify-content: end;
+}
+
 .align-center {
 	align-items: center;
+}
+
+.align-start {
+	align-items: start;
+}
+
+.align-end {
+	align-items: end;
 }
