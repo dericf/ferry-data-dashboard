@@ -1,36 +1,47 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-export default function InfoModal({ ...props }) {
+export default function InfoModal({
+  triggerText = "View",
+  disabled = null,
+  titleText = null,
+  ...props
+}) {
   const [showModal, setShowModal] = useState();
 
-	const handleClose = () => {
-		setShowModal(false);
-	}
+  const handleClose = () => {
+    setShowModal(false);
+  };
+
+  const handleClick = async () => {
+    setShowModal(true);
+  };
 
   return (
-    <div>
-      <button onClick={() => setShowModal(true)}>View</button>
+    <>
+      <button className="button-secondary" disabled={disabled} onClick={handleClick}>
+        {triggerText}
+      </button>
 
       {showModal && (
         <div
-          className="flex flex-col align-center modal-content"
-          style={{
-            position: "absolute",
-            left: 0,
-            bottom: 0,
-            width: "100vw",
-            height: "50vh",
-            backgroundColor: "white",
-						color: "black",
-            justifyContent: "space-around"
-          }}
+          className="flex flex-col justify-between align-center modal"
         >
-          {props.children}
-          <div className="flex flex-row justify-center">
-            <button className="info-modal-button" onClick={handleClose}>Close</button>
+          {titleText && (
+            <div className="modal-title-bar">
+              <span className="modal-close-icon" onClick={handleClose}>X</span>
+              <h2 className="text-center">
+                {titleText}
+              </h2>
+            </div>
+          )}
+          <div className="modal-content">{props.children}</div>
+          <div className="flex flex-row justify-center modal-action-bar">
+            <button className="button-error" onClick={handleClose}>
+              Close
+            </button>
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
