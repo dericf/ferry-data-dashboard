@@ -1,0 +1,40 @@
+span.alert {
+	font-size: 12px;	
+	font-weight: bold;
+	padding: 0.25rem 1rem;
+	border-radius: 0.25rem;
+}
+
+span.alert.success {
+	color: rgba(14, 126, 10, 0.959);
+	
+}
+
+span.alert.error {
+	color: rgba(116, 15, 15, 0.959);
+}
+
+span.alert.medium {
+	font-size: 14px;
+}
+
+span.alert.large {
+	font-size: 18px;
+}
+
+span.alert.xlarge {
+	font-size: 22px;
+}
+
+span.alert-popup {
+	position: fixed;
+	top: 0;
+	right: 0;
+	margin-right: 2rem;
+	margin-top: 1rem;
+	width: auto;
+	height: auto;
+	padding: 1rem 1rem;
+	background-color: rgb(243, 243, 243);
+	backdrop-filter: blur(10px);
+}
