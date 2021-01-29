@@ -2,7 +2,7 @@ import React from "react";
 import moment from "moment";
 import Highlight from "react-highlight";
 
-import { date_format, time_format } from "../utilities/dates";
+import { dateFormat, timeFormat } from "../utilities/dates";
 
 export default function CapacityDataPointInfo({ datapoint }) {
   return (
@@ -29,8 +29,8 @@ export default function CapacityDataPointInfo({ datapoint }) {
             <tr key="datapoint-info-sailing-time">
               <td className="center">Sailing Date/Time</td>
               <td>
-                {date_format(datapoint.date_recorded)} at{" "}
-                {time_format(
+                {dateFormat(datapoint.date_recorded)} at{" "}
+                {timeFormat(
                   datapoint.date_of_sailing + " " + datapoint.time_of_sailing,
                 )}
               </td>
@@ -42,8 +42,8 @@ export default function CapacityDataPointInfo({ datapoint }) {
             <tr key="datapoint-info-recorded-on">
               <td className="center">Datapoint Recorded On</td>
               <td>
-                {date_format(datapoint.date_recorded)} at{" "}
-                {time_format(
+                {dateFormat(datapoint.date_recorded)} at{" "}
+                {timeFormat(
                   datapoint.date_recorded + " " + datapoint.time_recorded,
                 )}
               </td>

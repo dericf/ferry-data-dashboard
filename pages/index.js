@@ -9,7 +9,7 @@ import ActionBar from "../components/ActionBar";
 import ConfirmModal from "../components/ConfirmModal";
 import InfoModal from "../components/InfoModal";
 import CapacityDataPointInfo from "../components/CapacityDataPointInfo";
-import { date_format, time_format } from "../utilities/dates";
+import { dateFormat, timeFormat } from "../utilities/dates";
 import DataTable from "../components/DataTable";
 import WorkerPortal from "../components/WorkerPortal";
 import { useToggle } from "../hooks/useToggle";
