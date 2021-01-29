@@ -16,31 +16,31 @@ import { useToggle } from "../hooks/useToggle";
 import { useInputValue } from "../hooks/useInputValue";
 import { useBasicAuth } from "../hooks/useBasicAuth";
 import DownloadCSVButton from "../components/DownloadCSVButton";
-import { useAlertPopup } from "../hooks/useAlert";
-import AlertPopup from "../components/AlertPopup";
+import { useAlert } from "../hooks/useAlert";
+
 import { useLoadingScreen } from "../hooks/useLoadingScreen";
 import LoadingBackdrop from "../components/LoadingBackdrop";
+import AlertPopup from "../components/Alert";
 
 export default function Dashboard({ data }) {
   const [tableData, setTableData] = useState();
   const [terminals, setTerminals] = useState();
   const [selectedTerminal, setSelectedTerminal] = useState();
-  const { loading, setLoading } = useLoadingScreen();
+  const { loading, loadingMessage, setLoading } = useLoadingScreen();
 
   const [open, toggle] = useToggle(null);
-  const { auth, setAuth } = useBasicAuth(true);
-  const { value: pwd } = useInputValue();
+  const { isAuthenticated, pwd } = useBasicAuth();
 
-  const { alertText, setAlertText, setAlertStatus } = useAlertPopup(
-    "TESTINETG",
-  );
+  // const {alertText, setAlertText, setAlertStatus} = useAlertPopup()
+  const { resetAlert, sendAlert, sendError } = useAlert();
 
   // let formatted_date_string = new Date().toUTCString().replace(/ /g, "_").replace(/,/g, "").replace(/:/g, "_")
 
   const refreshData = async () => {
-    setLoading(true);
+    setLoading(true, "Loading Fresh Data");
+    const authInfo = encodeURIComponent(pwd);
     const resp = await fetch("/api/get-limited-data", {
-      headers: { "X-AUTH": pwd },
+      headers: { "X-Password": authInfo },
     });
     const json = await resp.json();
 
@@ -56,11 +56,13 @@ export default function Dashboard({ data }) {
   };
 
   useEffect(() => {
-    (async () => {
-      refreshData();
-      // refreshTerminals();
-    })();
-  }, [auth]);
+    if (isAuthenticated === true) {
+      (async () => {
+        refreshData();
+        // refreshTerminals();
+      })();
+    }
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (terminals) {
@@ -70,12 +72,12 @@ export default function Dashboard({ data }) {
 
   return (
     <div className="container">
-      {loading && <LoadingBackdrop />}
+      {loading && <LoadingBackdrop message={loadingMessage} />}
       <Head>
         <title>Ferry Data Dashboard</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link key="favicon" rel="icon" href="/favicon.ico" />
       </Head>
-
+      <AlertPopup />
       {/* TODO: move css to file */}
       <main
         className={loading ? "blur" : ""}
@@ -92,51 +94,36 @@ export default function Dashboard({ data }) {
         }}
       >
         <div className="flex flex-row flex-shrink flex-no-grow justify-between align-start flex-wrap">
-          <h1 onClick={toggle} style={{ textAlign: "left" }}>
-            Ferry Capacity Data
+          <h1 onClick={toggle} className="text-center">
+            Ferry Capacity Dashboard
           </h1>
-          {/* <button className="button" onClick={downloadData}>Download</button> */}
-
+        </div>
+        <div className="flex flex-row flex-shrink flex-no-grow justify-center align-center flex-wrap">
           <WorkerPortal></WorkerPortal>
 
           <DownloadCSVButton />
-
-          {alertText?.length > 0 && (
-            <AlertPopup text={alertText} setText={setAlertText} />
-          )}
         </div>
-        <div className="flex flex-row justify-around align-center flex-wrap my-2">
-          <button
-            disabled={!auth}
-            className="button-secondary align-self-center"
-            onClick={refreshData}
-          >
-            Refresh Table
-          </button>
 
-          <button
-            className="button-secondary align-self-center mx-2"
-            onClick={() => setAlertText("Testing this alert out")}
-          >
-            Settings
-          </button>
-          {tableData && auth && (
-            <p className="text-left">
-              Note: This table only displays the 100 newest entries. Download
-              button will download entire datet.
-            </p>
-          )}
-          {/* {terminals && (
-            <ActionBar
-              terminals={terminals}
-              selectedTerminal={selectedTerminal}
-              onChange={(e) => setSelectedTerminal(e.target.value)}
-            />
-          )} */}
-        </div>
+        {isAuthenticated && (
+          <div className="flex flex-row justify-around align-center flex-wrap my-2">
+            <button
+              disabled={!isAuthenticated}
+              className="button-secondary align-self-center mx-2"
+              onClick={refreshData}
+            >
+              Refresh Table
+            </button>
+
+            {tableData && (
+              <p className="text-left">
+                Note: This table only displays the 10 newest entries. See buttons above to download entire dataset.
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Render the Table */}
-        {auth && <DataTable tableData={tableData}></DataTable>}
+        {isAuthenticated && <DataTable tableData={tableData}></DataTable>}
       </main>
     </div>
   );
