@@ -6,17 +6,18 @@ import moment from "moment";
 import { useToggle } from "../hooks/useToggle";
 import { useInputValue } from "../hooks/useInputValue";
 import { useBasicAuth } from "../hooks/useBasicAuth";
-import { useAlertPopup } from "../hooks/useAlert";
+import { useAlert } from "../hooks/useAlert";
 
 export default function WorkerPortal() {
   const [status, setStatus] = useState();
   const [statusLastUpdated, setStatusLastUpdated] = useState();
   // const [pwd, setPwd] = useState();
   const [open, toggle] = useToggle(null);
-  const { value: pwd, onChange: onPwdChange } = useInputValue("");
-  const { auth, setAuth } = useBasicAuth();
+  
+  const { isAuthenticated, pwd, setPwd, logout, tryAuthenticateWithPassword } = useBasicAuth();
 
-  const {alertText, setAlertText, setAlertStatus} = useAlertPopup()
+  // const {alertText, setAlertText, setAlertStatus} = useAlertPopup()
+  const {sendAlert, sendError} = useAlert()
 
   useEffect(() => {
     getStatus();
@@ -31,8 +32,10 @@ export default function WorkerPortal() {
   const getStatus = async () => {
     const resp = await fetch(process.env.NEXT_PUBLIC_API_SERVER_URL);
     if (resp.status < 200 && resp.status >= 300) {
+      sendError("Error updating status")
       setStatus(null);
     } else {
+      sendAlert("Bot status was updated.")
       const json = await resp.json();
       console.log(json);
       setStatus(json);
@@ -40,24 +43,7 @@ export default function WorkerPortal() {
     }
   };
 
-  const tryAuthenticate = async (e) => {
-    e.preventDefault()
-    const res = await fetch("/api/authenticate", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ password: pwd }),
-    });
-    if (res.status >= 200 && res.status < 300) {
-      // const json = res.json()
-      setAuth(true);
-      setAlertStatus("success")
-      setAlertText("You have been logged in")
-    } else {
-      setAuth(false);
-      setAlertStatus("error")
-      setAlertText("Wrong Password")
-    }
-  };
+  
 
   const startBot = async () => {
     const res = await fetch(
@@ -69,11 +55,11 @@ export default function WorkerPortal() {
       },
     );
     if (res.status >= 200 && res.status < 300) {
+      sendAlert("Bot was started")
       const json = res.json();
       console.log(json);
-      //   setIsAuthenticated(true);
-      // } else {
-      //   setIsAuthenticated(false);
+    } else {
+      sendError("Error. Bot could not be started.")
     }
   };
 
@@ -87,11 +73,9 @@ export default function WorkerPortal() {
       },
     );
     if (res.status >= 200 && res.status < 300) {
-      // const json = res.json()
-      //   setIsAuthenticated(true);
-      // } else {
-      //   setIsAuthenticated(false);
-      console.log("Stopped the bot");
+      sendAlert("Bot was stopped.")
+    } else {
+      sendError("Error. Bot could not be stopped.")
     }
   };
 
@@ -100,29 +84,41 @@ export default function WorkerPortal() {
       <div className="flex flex-row justify-around align-stretch mx-2 border">
         <form className="flex flex-col" >
           <input
-          className=""
-            type="text"
+          className="text-center"
+            type="password"
             name="password"
             id="password"
             placeholder="password"
-            value={pwd?.value}
-            onChange={onPwdChange}
+            disabled={isAuthenticated}
+            value={pwd}
+            onChange={(e)=> setPwd(e.target.value)}
           />
           
-          <button
+          {!isAuthenticated && (
+            <button
             style={{ marginTop: "0.5rem" }}
-            disabled={auth}
-            onClick={tryAuthenticate}
+            
+            onClick={(e) => tryAuthenticateWithPassword(e, pwd)}
           >
             Authenticate
           </button>
+          )}
+
+          {isAuthenticated && (
+            <button
+            style={{ marginTop: "0.5rem" }}
+            onClick={logout}
+          >
+            Logout
+          </button>
+          )}
         </form>
       
       <div className="flex flex-col justify-around align-stretch mx-2">
         <InfoModal
           titleText={`Bot/Web Scraper Controls`}
           triggerText={"Bot Controls"}
-          disabled={!auth}
+          disabled={!isAuthenticated}
         >
           <div className="flex flex-col justify-center align-center">
             <div className="flex-flex-row my-2">
@@ -140,7 +136,7 @@ export default function WorkerPortal() {
             <span className="alert success">
               Status Updated: {statusLastUpdated}
             </span>
-
+            <Divider />
             <table>
               <thead>
                 <tr>
@@ -184,10 +180,6 @@ export default function WorkerPortal() {
               </thead>
               <tbody>
                 <tr>
-                  <td className="center">{pwd}</td>
-                  <td className="right">2</td>
-                </tr>
-                <tr>
                   <td className="center">1</td>
                   <td className="right">2</td>
                 </tr>
@@ -199,10 +191,7 @@ export default function WorkerPortal() {
                   <td className="center">1</td>
                   <td className="right">2</td>
                 </tr>
-                <tr>
-                  <td className="center">1</td>
-                  <td className="right">2</td>
-                </tr>
+                
                 <tr>
                   <td className="center">1</td>
                   <td className="right">2</td>
@@ -220,10 +209,11 @@ export default function WorkerPortal() {
                   ))}
               </tbody>
             </table>
-            <div>Status: {status && JSON.stringify(status)}</div>
+            <div>
+            </div>
           </div>
         </InfoModal>
-        {auth ? (
+        {isAuthenticated ? (
           <span className="alert success">Authenticated</span>
         ) : (
           <span className="alert error">Not Authenticated</span>
