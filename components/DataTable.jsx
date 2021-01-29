@@ -1,6 +1,7 @@
 import React from "react";
 import { date_format, time_format } from "../utilities/dates";
 import CapacityDataPointInfo from "./CapacityDataPointInfo";
+import Divider from "./Divider";
 import InfoModal from "./InfoModal";
 
 const DataTable = ({ tableData }) => {
@@ -14,7 +15,7 @@ const DataTable = ({ tableData }) => {
         <thead>
           <tr>
             <th>Id</th>
-            <th>Crossing Name</th>
+            <th colSpan="2">Crossing Name</th>
             <th colSpan="2">Date/Time of Sailing</th>
             <th className="center">Capacity (Available)</th>
             <th colSpan="2">Date/Time Recorded</th>
@@ -25,7 +26,17 @@ const DataTable = ({ tableData }) => {
           {tableData.map((row) => (
             <tr key={row.id}>
               <td className="right">{row.id}</td>
-              <td className="left">{row.crossing_name}</td>
+              <td className="center">
+                
+                <div className="flex flex-row justify-center">
+                  <span>{String(row.crossing_name).split("-")[0]}</span>
+                </div>
+              </td>
+              <td className="center">
+              <div className="flex flex-row justify-center">
+                  <span>{String(row.crossing_name).split("-")[1]}</span>
+                </div>
+              </td>
               <td className="right" style={{ borderRight: "none" }}>
                 {date_format(row.date_of_sailing)}
               </td>
@@ -42,7 +53,11 @@ const DataTable = ({ tableData }) => {
                   className="flex flex-row justify-center align-center"
                   style={{ width: "6rem" }}
                 >
-                  <InfoModal titleText={`${row.crossing_name} - (ID: ${row.id})`} triggerText="Info" disabled={false}>
+                  <InfoModal
+                    titleText={"Individual Datapoint Information"}
+                    triggerText="Info"
+                    disabled={false}
+                  >
                     <CapacityDataPointInfo datapoint={row} />
                   </InfoModal>
                 </div>
