@@ -34,9 +34,10 @@ export default function DownloadCSVButton() {
       sendAlert("Success! Your Data is now ready to download.");
       setDisableDownload(false);
     } else {
-      sendError("Something went wrong. You are not authorized to access the dataset.")
+      sendError(
+        "Something went wrong. You are not authorized to access the dataset.",
+      );
     }
-    
   };
 
   if (!isAuthenticated) {
@@ -60,16 +61,18 @@ export default function DownloadCSVButton() {
           className="button-secondary"
           onClick={requestDataset}
         >
-          Request Full Data Set
+          { !disableDownload ? "Re-Request Latest Data Set" : "Request Full Data Set"}
         </button>
 
-        <button
-          disabled={disableDownload}
-          className="button-success mt-2"
-          onClick={download}
-        >
-          Download CSV
-        </button>
+        {!disableDownload && (
+          <button
+            disabled={disableDownload}
+            className="button-success mt-2"
+            onClick={download}
+          >
+            Download CSV
+          </button>
+        )}
       </div>
     </>
   );
