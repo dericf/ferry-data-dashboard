@@ -1,8 +1,13 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
+import { GET_ENTIRE_DATASET } from "../../graphql/queries";
 
 export default async (req, res) => {
-  
+  if (decodeURIComponent(req.headers['x-password']) !== process.env.DASHBOARD_PASSWORD) {
+    console.log("Password does not match...")
+    res.statusCode = 401
+    return res.json({capacity_data: []})
+  }  
   const client = new ApolloClient({
     uri: "https://ferry-data.hasura.app/v1/graphql",
     headers: {
@@ -12,21 +17,7 @@ export default async (req, res) => {
   });
 
   const { data, loading } = await client.query({
-    query: gql`
-      query GetCapacityData {
-        capacity_data(order_by: {id: asc, crossing_name: asc, date_recorded: asc, time_recorded: asc }) {
-          created_at
-          crossing_name
-          date_recorded
-          id
-          percent_available
-          time_of_sailing
-          date_of_sailing
-          time_recorded
-          updated_at
-        }
-      }
-    `,
+    query: GET_ENTIRE_DATASET,
   });
 
   res.statusCode = 200
