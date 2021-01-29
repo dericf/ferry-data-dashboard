@@ -7,9 +7,10 @@ import { useToggle } from "../hooks/useToggle";
 import { useInputValue } from "../hooks/useInputValue";
 import { useBasicAuth } from "../hooks/useBasicAuth";
 import { useAlert } from "../hooks/useAlert";
+import { dateFormat, timeFormat } from "../utilities/dates";
 
 export default function WorkerPortal() {
-  const [status, setStatus] = useState();
+  const [status, setStatus] = useState(null);
   const [statusLastUpdated, setStatusLastUpdated] = useState();
   // const [pwd, setPwd] = useState();
   const [open, toggle] = useToggle(null);
@@ -27,21 +28,33 @@ export default function WorkerPortal() {
 
   useEffect(() => {
     let intervalId;
-    if (isAuthenticated) {
+    
+    getStatus();
+    intervalId = setInterval(() => {
       getStatus();
-      intervalId = setInterval(() => {
-        getStatus();
-      }, 100000);
-    }
+    }, 10000);
+  
     return () => {
       clearInterval(intervalId);
     };
   }, []);
 
+  useEffect(() => {
+    if (open === true) {
+      getStatus()
+    }
+  }, [open])
+
   const getStatus = async () => {
-    const resp = await fetch(process.env.NEXT_PUBLIC_API_SERVER_URL, {
-      headers: { "x-password": encodeURIComponent(pwd) },
-    });
+    if (!isAuthenticated) {
+      return false
+    }
+    const resp = await fetch(
+      `${process.env.NEXT_PUBLIC_API_SERVER_URL}/dashboard/status`,
+      {
+        headers: { "x-password": encodeURIComponent(pwd) },
+      },
+    );
     if (resp.status < 200 && resp.status >= 300) {
       sendError("Error updating status");
       setStatus(null);
@@ -50,7 +63,7 @@ export default function WorkerPortal() {
       const json = await resp.json();
       console.log(json);
       setStatus(json);
-      setStatusLastUpdated(moment().format("hh:mm:ss"));
+      setStatusLastUpdated(moment().format("h:mm:ss A"));
     }
   };
 
@@ -67,6 +80,7 @@ export default function WorkerPortal() {
       sendAlert("Bot was started");
       const json = res.json();
       console.log(json);
+      getStatus()
     } else {
       sendError("Error. Bot could not be started.");
     }
@@ -83,6 +97,7 @@ export default function WorkerPortal() {
     );
     if (res.status >= 200 && res.status < 300) {
       sendAlert("Bot was stopped.");
+      getStatus()
     } else {
       sendError("Error. Bot could not be stopped.");
     }
@@ -125,50 +140,50 @@ export default function WorkerPortal() {
             titleText={`Bot/Web Scraper Controls`}
             triggerText={"Bot Controls"}
             disabled={!isAuthenticated}
+            onOpen={() => getStatus()}
           >
             <div className="flex flex-col justify-center align-center">
-              <div className="flex-flex-row my-2">
-                <button className="button-secondary mx-2" onClick={getStatus}>
+              <div className="flex flex-row flex-wrap justify-center my-2">
+                <button
+                  className="button-secondary my-2 mx-2"
+                  onClick={getStatus}
+                >
                   Refresh Status
                 </button>
-                <button className="button-success mx-2" onClick={startBot}>
+                <button className="button-success my-2 mx-2" onClick={startBot}>
                   Start Bot
                 </button>
-                <button className="button-error mx-2" onClick={stopBot}>
+                <button className="button-error my-2 mx-2" onClick={stopBot}>
                   Stop Bot
                 </button>
               </div>
 
-              <span className="alert success">
-                Status Updated: {statusLastUpdated}
+              <span className="alert success text-large">
+                Status Last Updated: {statusLastUpdated}
               </span>
               <Divider />
               <table>
                 <thead>
                   <tr>
-                    <th colSpan="2">Started Jobs</th>
+                    <th colSpan="2">Running Jobs</th>
                   </tr>
                   <tr>
                     <th>Job ID</th>
-                    <th>Started at</th>
+                    <th>Created At</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td className="center">1</td>
-                    <td className="right">2</td>
-                  </tr>
-                  <tr>
-                    <td className="center">1</td>
-                    <td className="right">2</td>
-                  </tr>
-                  {status &&
-                    status.registries?.SCHEDULED_JOBS.map((job) => (
-                      <tr key={new Date()}>
-                        <td>1</td>
-                        <td>2</td>
-                      </tr>
-                    ))}
+                  {status?.STARTED_JOBS?.length == 0 && (
+                    <tr key="noStartedJobs">
+                      <td className="center" colSpan="2">No Running Jobs. Worker is Idle.</td>
+                    </tr>
+                  )}
+                  {status?.STARTED_JOBS?.map((job) => (
+                    <tr key={job.id}>
+                      <td className="center">{job.id}</td>
+                      <td className="center">{timeFormat(job.created_at, true)}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
 
@@ -177,45 +192,55 @@ export default function WorkerPortal() {
               <table>
                 <thead>
                   <tr>
-                    <th colSpan="2">Scheduled Jobs</th>
+                    <th colSpan="2">Upcoming Jobs</th>
                   </tr>
                   <tr>
                     <th>Job ID</th>
-                    <th>Scheduled to run at</th>
+                    <th>Will Run At</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td className="center">1</td>
-                    <td className="right">2</td>
-                  </tr>
-                  <tr>
-                    <td className="center">1</td>
-                    <td className="right">2</td>
-                  </tr>
-                  <tr>
-                    <td className="center">1</td>
-                    <td className="right">2</td>
-                  </tr>
-
-                  <tr>
-                    <td className="center">1</td>
-                    <td className="right">2</td>
-                  </tr>
-                  <tr>
-                    <td className="center">1</td>
-                    <td className="right">2</td>
-                  </tr>
-                  {status &&
-                    status.registries?.SCHEDULED_JOBS.map((job) => (
-                      <tr key={new Date()}>
-                        <td>1</td>
-                        <td>2</td>
-                      </tr>
-                    ))}
+                  {status?.SCHEDULED_JOBS?.length == 0 && (
+                    <tr key="noScheduledJobs">
+                      <td className="center" colSpan="2">No Scheduled Jobs</td>
+                    </tr>
+                  )}
+                  {status?.SCHEDULED_JOBS?.map((job) => (
+                    <tr key={job.id}>
+                      <td className="center">{job.id}</td>
+                      <td className="center">{timeFormat(moment(job.created_at).add(1, 'minute'), true)}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
-              <div></div>
+
+                <Divider />
+                <table>
+                <thead>
+                  <tr>
+                    <th colSpan="2">Finished Jobs</th>
+                  </tr>
+                  <tr>
+                    <th>Job ID</th>
+                    <th>Finshed At</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {status?.FINISHED_JOBS?.length == 0 && (
+                    <tr key="noFinishedJobs">
+                      <td className="center" colSpan="2">No Finished Jobs</td>
+                    </tr>
+                  )}
+                  {status?.FINISHED_JOBS?.map((job) => (
+                    <tr key={job.id}>
+                      <td className="center">{job.id}</td>
+                      <td className="center">{timeFormat(job.ended_at, true)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              <div className="my-4"></div>
             </div>
           </InfoModal>
           {isAuthenticated ? (
