@@ -1,11 +1,12 @@
 .modal {
 	position: absolute;
-	height: 60vh;
+	height: 85vh;
 	width: 100vw;
 	bottom: 0;
 	left: 0;
 	right: 0;
 	background-color: rgba(255, 255, 255, 0.972);
+	z-index: 100;
 }
 
 .modal-content {
