@@ -3,7 +3,13 @@ import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 import { GET_LIMITED_CAPACITY_DATA } from "../../graphql/queries";
 
 export default async (req, res) => {
+
   
+  if (decodeURIComponent(req.headers['x-password']) !== process.env.DASHBOARD_PASSWORD) {
+    console.log("Password does not match...")
+    res.statusCode = 401
+    return res.json({capacity_data: []})
+  }
   const client = new ApolloClient({
     uri: "https://ferry-data.hasura.app/v1/graphql",
     headers: {
