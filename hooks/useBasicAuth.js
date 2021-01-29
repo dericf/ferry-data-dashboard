@@ -14,7 +14,7 @@ export const BasicAuthContext = createContext(initialBasicAuthValue)
 export default function BasicAuthProvider({children}) {
 	
 	const [isAuthenticated, setisAuthenticated] = useState(null)
-	const [pwd, setPwd] = useState(null)
+	const [pwd, setPwd] = useState("")
 	const {sendAlert, sendError} = useAlert()
 
 	const tryAuthenticateWithPassword = async (e, pwd) => {
