@@ -4,9 +4,16 @@ export default function InfoModal({
   triggerText = "View",
   disabled = null,
   titleText = null,
+  onOpen = () => {},
   ...props
 }) {
   const [showModal, setShowModal] = useState();
+
+  useEffect(() => {
+    if(showModal === true) {
+      onOpen();
+    }
+  }, [showModal])
 
   const handleClose = () => {
     setShowModal(false);
