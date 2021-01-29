@@ -20,20 +20,20 @@ th {
 td {
 	padding-left: 2rem;
 	padding-right: 2rem;
-	padding-top: 0.5rem;
-	padding-bottom: 0.5rem;
+	padding-top: 1.5rem;
+	padding-bottom: 1.5rem;
 	color: white;
 }
 
-td.left {
+td.left, th.left {
 	text-align: left;
 }
 
-td.right {
+td.right, th.right {
 	text-align: right;
 }
 
-td.center {
+td.center, th.center {
 	text-align: center;
 }
 

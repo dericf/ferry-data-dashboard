@@ -183,6 +183,7 @@ Align Items
 div.loading {
   position: fixed;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100vw;
@@ -215,7 +216,7 @@ div.divider {
 	width: 80%;
 	height: 4px;	
 	border-bottom: 2px solid #707070;
-	margin-top: 1.5rem;
+	margin-top: 1rem;
 	margin-bottom: 1rem;
 }
 
@@ -226,4 +227,12 @@ button, input {
 .border {
   border: solid 2px gray;
   padding: 8px 8px;
+}
+
+.raw-datapoint {
+  background-color: #3a3939;
+  color: white;
+  padding: 2rem;
+  overflow-x: auto;
+  max-width: 80vw;
 }

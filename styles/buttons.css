@@ -1,33 +1,3 @@
-.button-success,
-.button-error,
-.button-warning,
-.button-secondary {
-		color: white;
-		border-radius: 4px;
-		text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
-}
-
-.button-success {
-		background: rgb(28, 184, 65);
-		/* this is a green */
-}
-
-.button-error {
-		background: rgb(202, 60, 60);
-		/* this is a maroon */
-}
-
-.button-warning {
-		background: rgb(223, 117, 20);
-		/* this is an orange */
-}
-
-.button-secondary {
-		background: rgb(66, 184, 221);
-		/* this is a light blue */
-}
-
-
 button {
 	/* padding: 0.5rem 1.5rem;
 	border-radius: 0.25rem;
@@ -82,6 +52,35 @@ button {
 	border-color: -internal-light-dark(rgb(118, 118, 118), rgb(133, 133, 133));
 	border-image: initial;
 
+}
+
+.button-success,
+.button-error,
+.button-warning,
+.button-secondary {
+		color: white;
+		border-radius: 4px;
+		text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.button-success {
+		background: rgb(28, 184, 65);
+		/* this is a green */
+}
+
+.button-error {
+		background: rgb(202, 60, 60);
+		/* this is a maroon */
+}
+
+.button-warning {
+		background: rgb(223, 117, 20);
+		/* this is an orange */
+}
+
+.button-secondary {
+		background: rgb(66, 184, 221);
+		/* this is a light blue */
 }
 
 button:hover {
