@@ -6,7 +6,7 @@ import {GET_ALL_TERMINALS, GET_TERMINAL_BY_ID} from "../../graphql/queries"
 export default async (req, res) => {
   
   const client = new ApolloClient({
-    uri: "https://ferry-data.hasura.app/v1/graphql",
+    uri: process.env.GRAPHQL_ENDPOINT,
     headers: {
       "x-hasura-admin-secret": process.env.HASURA_GRAPHQL_ADMIN_SECRET,
     },

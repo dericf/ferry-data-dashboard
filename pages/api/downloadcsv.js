@@ -9,7 +9,7 @@ export default async (req, res) => {
     return res.json({capacity_data: []})
   }  
   const client = new ApolloClient({
-    uri: "https://ferry-data.hasura.app/v1/graphql",
+    uri: process.env.GRAPHQL_ENDPOINT,
     headers: {
       "x-hasura-admin-secret": process.env.HASURA_GRAPHQL_ADMIN_SECRET,
     },
