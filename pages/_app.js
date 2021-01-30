@@ -9,12 +9,15 @@ import "../styles/forms.css";
 import "../styles/layout.css";
 import AlertProvider from "../hooks/useAlert";
 import BasicAuthProvider from "../hooks/useBasicAuth";
+import DataProvider from "../hooks/useData";
 
 function MyApp({ Component, pageProps }) {
   return (
     <AlertProvider>
       <BasicAuthProvider>
-        <Component {...pageProps} />
+        <DataProvider>
+          <Component {...pageProps} />
+        </DataProvider>
       </BasicAuthProvider>
     </AlertProvider>
   );
