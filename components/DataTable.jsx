@@ -54,6 +54,7 @@ const DataTable = ({ tableData }) => {
                   style={{ width: "6rem" }}
                 >
                   <InfoModal
+                    triggerBackgroundColor="primary"
                     titleText={"Individual Datapoint Information"}
                     triggerText="Info"
                     disabled={false}
