@@ -1,10 +1,13 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
-
-import {GET_ALL_TERMINALS, GET_TERMINAL_BY_ID} from "../../graphql/queries"
+import { GET_ENTIRE_DATASET } from "../../graphql/queries";
 
 export default async (req, res) => {
-  
+  if (decodeURIComponent(req.headers['x-password']) !== process.env.DASHBOARD_PASSWORD) {
+    console.log("Password does not match...")
+    res.statusCode = 401
+    return res.json({capacity_data: []})
+  }  
   const client = new ApolloClient({
     uri: process.env.GRAPHQL_ENDPOINT,
     headers: {
@@ -14,9 +17,9 @@ export default async (req, res) => {
   });
 
   const { data, loading } = await client.query({
-    query: GET_ALL_TERMINALS
+    query: GET_ENTIRE_DATASET,
   });
 
   res.statusCode = 200
-  res.json({terminals: data.terminal})
+  res.json({capacity_data: data.capacity_data})
 }

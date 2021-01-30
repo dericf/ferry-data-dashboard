@@ -1,5 +1,5 @@
 import React from "react";
-import { date_format, time_format } from "../utilities/dates";
+import { dateFormat, timeFormat } from "../utilities/dates";
 import CapacityDataPointInfo from "./CapacityDataPointInfo";
 import Divider from "./Divider";
 import InfoModal from "./InfoModal";
@@ -38,15 +38,15 @@ const DataTable = ({ tableData }) => {
                 </div>
               </td>
               <td className="right" style={{ borderRight: "none" }}>
-                {date_format(row.date_of_sailing)}
+                {dateFormat(row.date_of_sailing)}
               </td>
               <td className="right" style={{ borderLeft: "none" }}>
-                {time_format(row.date_of_sailing + " " + row.time_of_sailing)}
+                {timeFormat(row.date_of_sailing + " " + row.time_of_sailing)}
               </td>
               <td className="center">{row.percent_available} %</td>
-              <td className="right">{date_format(row.date_recorded)}</td>
+              <td className="right">{dateFormat(row.date_recorded)}</td>
               <td className="right">
-                {time_format(row.date_recorded + " " + row.time_recorded)}{" "}
+                {timeFormat(row.date_recorded + " " + row.time_recorded)}{" "}
               </td>
               <td className="right">
                 <div
@@ -54,6 +54,7 @@ const DataTable = ({ tableData }) => {
                   style={{ width: "6rem" }}
                 >
                   <InfoModal
+                    triggerBackgroundColor="primary"
                     titleText={"Individual Datapoint Information"}
                     triggerText="Info"
                     disabled={false}

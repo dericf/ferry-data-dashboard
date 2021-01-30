@@ -10,8 +10,13 @@ span.alert.success {
 	
 }
 
+span.alert.success.border {
+	border: solid 2px rgba(14, 126, 10, 0.959);
+	
+}
+
 span.alert.error {
-	color: rgba(116, 15, 15, 0.959);
+	color: rgba(163, 10, 10, 0.966);
 }
 
 span.alert.medium {
@@ -37,4 +42,5 @@ span.alert-popup {
 	padding: 1rem 1rem;
 	background-color: rgb(243, 243, 243);
 	backdrop-filter: blur(10px);
+	z-index: 100;
 }
