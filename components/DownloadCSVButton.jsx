@@ -25,7 +25,7 @@ export default function DownloadCSVButton() {
     sendAlert("Fetching Full Dataset. Please Wait.");
     // Fetch the dataset
     const authInfo = encodeURIComponent(pwd);
-    const resp = await fetch("/api/downloadcsv", {
+    const resp = await fetch("/api/get-full-data", {
       headers: { "X-Password": authInfo },
     });
     if (resp.status >= 200 && resp.status < 300) {
@@ -55,10 +55,10 @@ export default function DownloadCSVButton() {
         ></CSVDownload>
       )}
 
-      <div className="flex flex-col mx-2 mt-2 justify-between border">
+      <div className="flex flex-col justify-between ">
         <button
           disabled={!isAuthenticated}
-          className="button-secondary"
+          className="button-secondary mt-2"
           onClick={requestDataset}
         >
           { !disableDownload ? "Re-Request Latest Data Set" : "Request Full Data Set"}
