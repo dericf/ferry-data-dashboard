@@ -23,8 +23,8 @@ import { useData } from "../../hooks/useData";
 import LoadingBackdrop from "../LoadingBackdrop";
 import AlertPopup from "../Alert";
 import { Auth } from "../Auth";
-import { DataVisualizerTest } from "./DataVisualizerTest";
-// import { DataVisualizer } from "./DataVisualizer";
+import { DataVisualizer } from "./DataVisualizer"
+// import { DataVisualizer from "./DataVisualizer
 
 export default function Dashboard({ data }) {
   const { data: tableData, setData: setTableData } = useData();
@@ -112,7 +112,7 @@ export default function Dashboard({ data }) {
                 onOpen={() => console.log("On Open/...")}
                 titleText={"Data Visualizer"}
               >
-                <DataVisualizerTest />
+                <DataVisualizer />
               </InfoModal>
 
               <DownloadCSVButton />
