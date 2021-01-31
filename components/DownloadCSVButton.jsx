@@ -25,11 +25,12 @@ export default function DownloadCSVButton() {
     sendAlert("Fetching Full Dataset. Please Wait.");
     // Fetch the dataset
     const authInfo = encodeURIComponent(pwd);
-    const resp = await fetch("/api/get-full-data", {
-      headers: { "X-Password": authInfo },
+    const resp = await fetch(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/data/get-full-dataset`, {
+      headers: { "x-password": authInfo },
     });
     if (resp.status >= 200 && resp.status < 300) {
       const json = await resp.json();
+      console.log('json', json)
       setCsvData(json.capacity_data);
       sendAlert("Success! Your Data is now ready to download.");
       setDisableDownload(false);
