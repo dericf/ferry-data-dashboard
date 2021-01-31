@@ -1,0 +1,12 @@
+{
+  "functions": {
+    "api/get-full-data.js": {
+      "memory": 3008,
+      "maxDuration": 60
+		},
+		"api/get-filtered-data.js": {
+      "memory": 3008,
+      "maxDuration": 60
+    }
+  }
+}
