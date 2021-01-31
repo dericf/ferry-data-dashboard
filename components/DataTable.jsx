@@ -6,7 +6,7 @@ import InfoModal from "./InfoModal";
 
 const DataTable = ({ tableData }) => {
   if (!tableData || tableData?.length == 0) {
-    return <h2>0 Records to show</h2>;
+    return <h2 className="text-center">0 Records to show</h2>;
   }
   // else
   return (
