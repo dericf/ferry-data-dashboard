@@ -5,7 +5,8 @@ import { GET_FILTERED_CAPACITY_DATA } from "../../graphql/queries";
 export default async (req, res) => {
 
   const variables = {
-    name: req.query['name']
+    name: req.query['name'],
+    dateOfSailing: req.query['dateOfSailing']
   }
 
   console.log("NAME: ", variables)
