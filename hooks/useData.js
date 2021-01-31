@@ -1,3 +1,4 @@
+import moment from "moment";
 import React, { useState, useContext, createContext, useEffect } from "react";
 import { useAlert } from "./useAlert";
 import { useBasicAuth } from "./useBasicAuth";
@@ -26,12 +27,23 @@ export default function DataProvider({ children }) {
       .replace(".", "_");
   };
 
-  const getFilteredData = async (crossing, date, time) => {
+  const getFilteredData = async ({
+    crossing_from = null,
+    crossing_to = null,
+    sailing_date = null,
+    sailing_time = null,
+  }) => {
     const authInfo = encodeURIComponent(pwd);
+    console.log('sailing_date', sailing_date)
     const resp = await fetch(
       "/api/get-filtered-data?" +
         new URLSearchParams({
-          name: "Sunshine Coast (Langdale) - Vancouver (Horseshoe Bay)",
+          name: crossing_from
+            ? crossing_from
+            : "Sunshine Coast (Langdale) - Vancouver (Horseshoe Bay)",
+          dateOfSailing: sailing_date ? sailing_date : moment().format("yyyy-M-D")
+          ? crossing_from
+          : "Sunshine Coast (Langdale) - Vancouver (Horseshoe Bay)",
         }),
       {
         headers: { "X-Password": authInfo },

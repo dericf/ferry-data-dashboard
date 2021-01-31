@@ -97,7 +97,31 @@ export default function WorkerPortal() {
         sendAlert("Bot was started");
         const json = res.json();
         // console.log(json);
-        getStatus();
+        await getStatus();
+      } else {
+        sendError("Error. Bot could not be started.");
+      }
+    } catch (error) {
+      // console.log("error", error);
+      setBotOffline(true);
+    }
+  };
+
+  const testBot = async () => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_SERVER_URL}/service/run-once`,
+        {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ password: pwd }),
+        },
+      );
+      if (res.status >= 200 && res.status < 300) {
+        sendAlert("Bot was started");
+        const json = res.json();
+        // console.log(json);
+        await getStatus();
       } else {
         sendError("Error. Bot could not be started.");
       }
@@ -119,7 +143,7 @@ export default function WorkerPortal() {
       );
       if (res.status >= 200 && res.status < 300) {
         sendAlert("Bot was stopped.");
-        getStatus();
+        await getStatus();
       } else {
         sendError("Error. Bot could not be stopped.");
       }
@@ -136,7 +160,7 @@ export default function WorkerPortal() {
   if (botOffline === true) {
     return (
       <div className="flex flex-col justify-center p-2 mx-2 my-2 border">
-        <span className="alert error text-large">Bot is Offline...</span>
+        <span className="alert error text-large ">Bot is Offline...</span>
         <button
           className="success"
           onClick={() => {
@@ -175,6 +199,13 @@ export default function WorkerPortal() {
                     onClick={startBot}
                   >
                     Start Bot
+                  </button>
+
+                  <button
+                    className="button-warning my-2 mx-2"
+                    onClick={testBot}
+                  >
+                    Run 1 Test
                   </button>
                   <button className="button-error my-2 mx-2" onClick={stopBot}>
                     Stop Bot
