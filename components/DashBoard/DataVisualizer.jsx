@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
-// import Plot from "react-plotly.js";
 import { useData } from "../../hooks/useData";
 import Highlight from "react-highlight";
+import dynamic from 'next/dynamic'
+
+const DynamicBarChart = dynamic(
+  () => import("./Charts/BarChart").then(mod => mod.BarChart),
+  { loading: () => <h1>loading chart...</h1>, ssr: false }
+)
 
 // {/* <Plot
 //     data={[
@@ -76,150 +81,61 @@ export const DataVisualizer = () => {
     "Nanaimo (Duke Point)",
   ];
 
-  const [filter, setFilter] = useState({
+  const initialFilterValues = {
     crossing_from: null,
     crossing_to: null,
     sailing_date: null,
     sailing_time: null,
-  });
-
-  const [formData, setFormData] = useState({
+  }
+  // Used to populate the dropdowns etc.
+  const initialFormData = {
     from_terminals: [],
     to_terminals: [],
     sailing_dates: [],
     sailing_times: ["08:00", "12:00", "20:00"],
-  });
+  }
+  
+  const [filter, setFilter] = useState(initialFilterValues);
+  const [formData, setFormData] = useState();
+  
+  const [showChart, setShowChart] = useState();
 
-  const { data, setData, getFilteredData } = useData();
-
-  const [chartData, setChartData] = useState([]);
+  // Bring in the data context
+  const { data, setData, getFilteredData, getBarChartData } = useData();
 
   const handleFilterChange = (e) => {
+    // Any time a filter option is changed
     e.preventDefault();
+    console.log('e.target', e.target)
     setFilter({
       ...filter,
       [e.target.name]: e.target.value,
     });
   };
 
-  const plotlyObject = {
-    data: [
-      {
-        name: "Sailing at: 2020-01-01 08:00",
-        y: [100, 80, 76, 23, 10],
-        x: [
-          "2020-01-01 00:00",
-          "2020-01-01 00:01",
-          "2020-01-01 00:02",
-          "2020-01-01 00:03",
-          "2020-01-01 00:04",
-        ],
-        type: "bar",
-      },
-      {
-        name: "Sailing at: 2020-01-01 12:00",
-
-        y: [100, 80, 46, 13, 6],
-        x: [
-          "2020-01-01 00",
-          "2020-01-01 00:01",
-          "2020-01-01 00:02",
-          "2020-01-01 00:03",
-          "2020-01-01 00:04",
-        ],
-
-        type: "bar",
-      },
-      {
-        name: "Sailing at: 2020-01-01 16:30",
-
-        y: [100, 90, 86, 73, 50],
-        x: [
-          "2020-01-01 00",
-          "2020-01-01 00:01",
-          "2020-01-01 00:02",
-          "2020-01-01 00:03",
-          "2020-01-01 00:04",
-        ],
-
-        type: "bar",
-      },
-      {
-        name: "Sailing at: 2020-01-01 20:00",
-        y: [100, 90, 86, 43, 10],
-        x: [
-          "2020-01-01 00",
-          "2020-01-01 00:01",
-          "2020-01-01 00:02",
-          "2020-01-01 00:03",
-          "2020-01-01 00:04",
-        ],
-        type: "bar",
-      },
-    ],
-    layout: {
-      height: 700,
-      width: 1000,
-      barmode: "group",
-      // barnorm: ,
-    },
-  };
-
-  // useEffect(() => {
-  //   if (typeof document !== "undefined") {
-  //     Plot = import("react-plotly.js");
-  //   }
-  // }, []);
-
-  useEffect(() => {
-    let ob = {};
-    for (let d of data) {
-      ob[d.date_of_sailing + " " + d.time_of_sailing] = {
-        name: d.date_of_sailing + " " + d.time_of_sailing,
-        x: [],
-        y: [],
-      };
-    }
-
-    for (let d of data) {
-      ob[d.date_of_sailing + " " + d.time_of_sailing].x.push(
-        d.date_recorded + " " + d.time_recorded,
-      );
-      ob[d.date_of_sailing + " " + d.time_of_sailing].y.push(
-        d.percent_available,
-      );
-    }
-
-    let arr = Array.from(Object.values(ob));
-    console.log("sd..........", ob);
-    console.log("Arrry..........", arr);
-    setChartData(arr);
-  }, [data]);
-
-  /*
-...(sd && sd[d.crossing_name] && sd[d.crossing_name][d.date_of_sailing + " " + d.time_of_sailing]?.length > 0 && sd[d.crossing_name][d.date_of_sailing + " " + d.time_of_sailing]),
-            
-*/
 
   return (
     <>
-      {/* <div className="flex justify-center align-center flex-row" style={{width:"80vw", height: "80vh"}}>
-    </div> */}
       <div className="flex flex-col justify-center text-center align-center my-4 mx-4">
-        <h2>Visualizer is still under development</h2>
+        <h2>Visualizer (still in early development)</h2>
         <form
           action=""
           className="flex flex-row flex-wrap justify-around align-center px-4 mx-4 my-2"
         >
+        
           <div className="flex flex-col align-start my-2">
-            <label htmlFor="">From</label>
+            {/* <h2>Choose a crossing to visualize</h2> */}
+            <label htmlFor="">Select a Crossing</label>
             <select
               style={{ maxWidth: "70vw" }}
               name="crossing_from"
               id="crossing_from"
               onChange={handleFilterChange}
-              value={filter.crossing_from | ""}
+              value={filter.crossing_from ? filter.crossing_from : ""}
             >
+              <option key={"EmptyCrossingFromOption"} value={""}>
+                {"    "}
+              </option>
               {DEFAULT_TERMINALS.map((terminalOption) => (
                 <option key={terminalOption.name} value={terminalOption.value}>
                   {terminalOption.name}
@@ -227,7 +143,7 @@ export const DataVisualizer = () => {
               ))}
             </select>
 
-            <label htmlFor="">To</label>
+            {/* <label htmlFor="">To</label>
             <select
               style={{ maxWidth: "70vw" }}
               name="crossing_to"
@@ -240,7 +156,7 @@ export const DataVisualizer = () => {
                   {terminalOption.name}
                 </option>
               ))}
-            </select>
+            </select> */}
           </div>
 
           <div className="flex flex-col align-start my-2 mx-2">
@@ -249,9 +165,9 @@ export const DataVisualizer = () => {
               type="date"
               name="sailing_date"
               onChange={handleFilterChange}
-              value={filter.sailing_date | ""}
+              value={filter.sailing_date ? filter.sailing_date :  ""}
             />
-            <label htmlFor="">Crossing Time</label>
+            {/* <label htmlFor="">Crossing Time (not implemented yet)</label> */}
             {/* <input
               type="time"
               name="crossing_time"
@@ -259,9 +175,10 @@ export const DataVisualizer = () => {
               onChange={handleFilterChange}
             /> */}
 
-            <select
+            {/* <select
               name="sailing_time"
               id=""
+              disabled={true}
               value={filter.sailing_time | ""}
               onChange={handleFilterChange}
             >
@@ -270,27 +187,31 @@ export const DataVisualizer = () => {
                   {sailing_time}
                 </option>
               ))}
-            </select>
+            </select> */}
           </div>
           <button
-            onClick={(e) => {
+            className="button-primary"
+            disabled={!(filter.crossing_from && filter.sailing_date)}
+            onClick={async (e) => {
               e.preventDefault();
-              getFilteredData(null);
+              await getFilteredData(filter);
+              setShowChart(true)
             }}
           >
-            Get Data
+            Refresh Chart
           </button>
         </form>
-        {/* {typeof document !== "undefined" && chartData?.length > 0 && (
-        <Plot
+        {/* Render the Bar Char here using NextJs Dynamic/ClientOnly Component */}
+        <DynamicBarChart filter={filter} showChart={showChart} />
+       
+        {/* <Plot
           data={plotlyObject.data}
           layout={plotlyObject.layout}
           onInitialized={(figure) => setState({ ...state, figure: figure })}
           onUpdate={(figure) => setState({ ...state, figure: figure })}
-        />
-        )} */}
-
-        {/* <Highlight className="json text-left">
+        /> 
+        
+        <Highlight className="json text-left">
           {JSON.stringify(data, null, 2)}
         </Highlight> */}
       </div>
