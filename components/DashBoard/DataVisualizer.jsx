@@ -3,10 +3,11 @@ import Link from "next/link";
 import { useData } from "../../hooks/useData";
 import Highlight from "react-highlight";
 import dynamic from 'next/dynamic'
+import moment from "moment";
 
-const DynamicBarChart = dynamic(
-  () => import("./Charts/BarChart").then(mod => mod.BarChart),
-  { loading: () => <h1>loading chart...</h1>, ssr: false }
+const DynamicLineChart = dynamic(
+  () => import("./Charts/LineChart").then(mod => mod.LineChart),
+  { loading: () => <h1 className="text-center">loading chart...</h1>, ssr: false }
 )
 
 // {/* <Plot
@@ -84,7 +85,7 @@ export const DataVisualizer = () => {
   const initialFilterValues = {
     crossing_from: null,
     crossing_to: null,
-    sailing_date: null,
+    sailing_date: String(moment().format("yyyy-M-D")),
     sailing_time: null,
   }
   // Used to populate the dropdowns etc.
@@ -165,7 +166,7 @@ export const DataVisualizer = () => {
               type="date"
               name="sailing_date"
               onChange={handleFilterChange}
-              value={filter.sailing_date ? filter.sailing_date :  ""}
+              value={filter.sailing_date}
             />
             {/* <label htmlFor="">Crossing Time (not implemented yet)</label> */}
             {/* <input
@@ -202,7 +203,7 @@ export const DataVisualizer = () => {
           </button>
         </form>
         {/* Render the Bar Char here using NextJs Dynamic/ClientOnly Component */}
-        <DynamicBarChart filter={filter} showChart={showChart} />
+        <DynamicLineChart filter={filter} showChart={showChart} />
        
         {/* <Plot
           data={plotlyObject.data}

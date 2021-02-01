@@ -13,7 +13,7 @@ export const Auth = () => {
   const { pingServer } = usePingServer();
 
   return (
-    <form className="flex flex-col px-2 py-3 border">
+    <form className="flex flex-col px-2 py-3">
       {isAuthenticated ? (
         <span className="alert success text-center text-medium">
           Authenticated
