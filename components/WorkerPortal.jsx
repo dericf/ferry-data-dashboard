@@ -159,7 +159,7 @@ export default function WorkerPortal() {
 
   if (botOffline === true) {
     return (
-      <div className="flex flex-col justify-center p-2 mx-2 my-2 border">
+      <div className="flex flex-col justify-center p-2 mx-2 my-2">
         <span className="alert error text-large ">Bot is Offline...</span>
         <button
           className="success"
@@ -174,7 +174,7 @@ export default function WorkerPortal() {
   }
 
   return (
-    <div className="flex flex-row flex-wrap p-2 mx-2 my-2 border">
+    <div className="flex flex-row flex-wrap p-2 mx-2 my-2">
       <div className="flex flex-row justify-around flex-wrap align-stretch">
         {isAuthenticated && (
           <div className="flex flex-col justify-around align-stretch ">
