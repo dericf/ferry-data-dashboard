@@ -3,7 +3,7 @@ import Plot from "react-plotly.js";
 import { useData } from "../../../hooks/useData";
 import { timeFormat } from "../../../utilities/dates";
 
-export const BarChart = ({ filter, showChart = null }) => {
+export const LineChart = ({ filter, showChart = null }) => {
   const [barChartData, setBarChartData] = useState(null);
   const { data } = useData();
 
@@ -15,7 +15,7 @@ export const BarChart = ({ filter, showChart = null }) => {
         name: timeFormat(d.date_of_sailing + " " + d.time_of_sailing),
         x: [],
         y: [],
-        type: "bar",
+        type: "line",
       };
     }
     // Now populate the x and y arrays
