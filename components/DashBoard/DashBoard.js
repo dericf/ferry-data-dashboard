@@ -2,19 +2,13 @@
  * https://www.npmjs.com/package/react-csv
  */
 import Head from "next/head";
-import Link from "next/link";
-import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
-import { CSVLink, CSVDownload } from "react-csv";
 import { useEffect, useState } from "react";
-import ActionBar from "../ActionBar";
-import ConfirmModal from "../ConfirmModal";
+
 import InfoModal from "../InfoModal";
-import CapacityDataPointInfo from "../CapacityDataPointInfo";
-import { dateFormat, timeFormat } from "../../utilities/dates";
+
 import DataTable from "../DataTable";
 import WorkerPortal from "../WorkerPortal";
 import { useToggle } from "../../hooks/useToggle";
-import { useInputValue } from "../../hooks/useInputValue";
 import { useBasicAuth } from "../../hooks/useBasicAuth";
 import DownloadCSVButton from "../DownloadCSVButton";
 import { useAlert } from "../../hooks/useAlert";
@@ -23,7 +17,7 @@ import { useData } from "../../hooks/useData";
 import LoadingBackdrop from "../LoadingBackdrop";
 import AlertPopup from "../Alert";
 import { Auth } from "../Auth";
-import { DataVisualizer } from "./DataVisualizer"
+import { DataVisualizer } from "./DataVisualizer";
 // import { DataVisualizer from "./DataVisualizer
 
 export default function Dashboard({ data }) {
@@ -121,10 +115,7 @@ export default function Dashboard({ data }) {
         </div>
 
         {isAuthenticated && (
-          <div
-            className="flex flex-col justify-stretch"
-            style={{ width: "95vw" }}
-          >
+          <div className="flex flex-col align-center" style={{ width: "95vw" }}>
             <div className="flex flex-row justify-evenly align-center flex-wrap my-2">
               <button
                 disabled={!isAuthenticated}
