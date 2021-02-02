@@ -4,10 +4,11 @@ import { useData } from "../../hooks/useData";
 import Highlight from "react-highlight";
 import dynamic from 'next/dynamic'
 import moment from "moment";
+import { LoadingText } from "../Loading/LoadingText";
 
 const DynamicLineChart = dynamic(
   () => import("./Charts/LineChart").then(mod => mod.LineChart),
-  { loading: () => <h1 className="text-center">loading chart...</h1>, ssr: false }
+  {ssr: false }
 )
 
 // {/* <Plot
@@ -100,6 +101,8 @@ export const DataVisualizer = () => {
   const [formData, setFormData] = useState();
   
   const [showChart, setShowChart] = useState();
+  const [isProcessing, setIsProcessing] = useState(false)
+
 
   // Bring in the data context
   const { data, setData, getFilteredData, getBarChartData } = useData();
@@ -117,14 +120,14 @@ export const DataVisualizer = () => {
 
   return (
     <>
-      <div className="flex flex-col justify-center text-center align-center my-4 mx-4">
+      <div className="flex flex-col justify-center text-center align-evenly my-4 mx-4">
         <h2>Visualizer (still in early development)</h2>
         <form
           action=""
           className="flex flex-row flex-wrap justify-around align-center px-4 mx-4 my-2"
         >
         
-          <div className="flex flex-col align-start my-2">
+          <div className="flex flex-col justify-end align-start my-2">
             {/* <h2>Choose a crossing to visualize</h2> */}
             <label htmlFor="">Select a Crossing</label>
             <select
@@ -190,20 +193,26 @@ export const DataVisualizer = () => {
               ))}
             </select> */}
           </div>
+          
           <button
             className="button-primary"
-            disabled={!(filter.crossing_from && filter.sailing_date)}
+            disabled={!(filter.crossing_from || filter.sailing_date)}
             onClick={async (e) => {
+              setIsProcessing(true)
               e.preventDefault();
               await getFilteredData(filter);
               setShowChart(true)
+              setIsProcessing(false)
             }}
           >
             Refresh Chart
           </button>
+          
         </form>
         {/* Render the Bar Char here using NextJs Dynamic/ClientOnly Component */}
-        <DynamicLineChart filter={filter} showChart={showChart} />
+        {isProcessing === true ? (<LoadingText />) : (
+          <DynamicLineChart filter={filter} showChart={showChart} />
+        )}
        
         {/* <Plot
           data={plotlyObject.data}
