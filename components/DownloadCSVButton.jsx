@@ -4,6 +4,7 @@ import { useAlert } from "../hooks/useAlert";
 import { useBasicAuth } from "../hooks/useBasicAuth";
 import { useLoadingScreen } from "../hooks/useLoadingScreen";
 import { headers } from "../utilities/csv_helpers";
+import { LoadingText } from "./Loading/LoadingText";
 
 export default function DownloadCSVButton() {
   const { isAuthenticated, pwd } = useBasicAuth();
@@ -11,8 +12,8 @@ export default function DownloadCSVButton() {
   const [disableDownload, setDisableDownload] = useState(true);
   const { setLoading } = useLoadingScreen();
   const [triggerDownload, setTriggerDownload] = useState();
-
   const { sendAlert, sendError } = useAlert();
+  const [isProcessing, setIsProcessing] = useState()
 
   const download = async () => {
     setTriggerDownload(true);
@@ -21,6 +22,7 @@ export default function DownloadCSVButton() {
   };
 
   const requestDataset = async (e) => {
+    setIsProcessing(true);
     e.preventDefault();
     sendAlert("Fetching Full Dataset. Please Wait.");
     // Fetch the dataset
@@ -34,6 +36,7 @@ export default function DownloadCSVButton() {
       setCsvData(json.capacity_data);
       sendAlert("Success! Your Data is now ready to download.");
       setDisableDownload(false);
+      setIsProcessing(false);
     } else {
       sendError(
         "Something went wrong. You are not authorized to access the dataset.",
@@ -62,7 +65,7 @@ export default function DownloadCSVButton() {
           className="button-secondary mt-2"
           onClick={requestDataset}
         >
-          { !disableDownload ? "Re-Request Latest Data Set" : "Request Full Data Set"}
+          { isProcessing === true ? <LoadingText /> : (!disableDownload ? "Re-Request Latest Data Set" : "Request Full Data Set")}
         </button>
 
         {!disableDownload && (
