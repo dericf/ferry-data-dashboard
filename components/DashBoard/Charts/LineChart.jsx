@@ -35,6 +35,8 @@ export const LineChart = ({ filter, showChart = null }) => {
     setBarChartData(reFormatData());
   }, [data]);
   const layout = {
+    width: 2*window?.innerWidth/3,
+    height: window?.innerHeight/2,
     xaxis: { title: "Date & Time" },
     yaxis: { title: "Capacity Available (%)", range: [0, 100] },
     barmode: "group",
@@ -48,7 +50,7 @@ export const LineChart = ({ filter, showChart = null }) => {
     },
   };
   return (
-    <>
+    <div className="flex flex-col justify-center align-center overflow-x-auto px-4">
       {barChartData && showChart && barChartData.length == 0 && (
 				<h2>No Results</h2>
 			)}
@@ -58,6 +60,6 @@ export const LineChart = ({ filter, showChart = null }) => {
           <Plot data={barChartData} layout={layout} />
         </>
       )}
-    </>
+    </div>
   );
 };
