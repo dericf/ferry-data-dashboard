@@ -100,11 +100,11 @@ Align Items
 }
 
 .align-self-start {
-  align-self: start;
+  align-self: flex-start;
 }
 
 .align-self-end {
-  align-self: end;
+  align-self: flex-end;
 }
 
 
@@ -121,6 +121,7 @@ div.loading {
   opacity: 75%;
   text-align: center;
   font-size: 40px;
+  line-height: 1;
   z-index: 5;
   vertical-align: middle;
   background-color: rgba(5, 71, 146, 0.897);
@@ -344,4 +345,8 @@ button, input {
 
 .w-100vw {
   width: 100vw !important;
+}
+
+.overflow-x-auto {
+  overflow-x:auto;
 }
