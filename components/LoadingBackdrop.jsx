@@ -18,8 +18,8 @@ export default function LoadingBackdrop({message}) {
 
 	return (
 		<div className="loading">
-			<div>{message && (<h2>{message}</h2>)}</div>
-			<div><h3>{dotCount.map((dot, index) => <span key={dot+index}>{dot}</span>)}</h3></div>
+			{message && (<h2>{message}</h2>)}
+			<h3>{dotCount.map((dot, index) => <span key={dot+index}>{dot}</span>)}</h3>
 		</div>
 	)
 }
