@@ -2,17 +2,18 @@ import React, { useEffect } from "react";
 import AlertProvider, { useAlert } from "../hooks/useAlert";
 
 export default function AlertPopup(props) {
-  const { alert, resetAlert } = useAlert();
-  useEffect(() => {
-		if (alert.active === true){
-			setTimeout(() => {
-				resetAlert();
-			}, 5000);
-		}
-  }, [alert]);
-	const classes = `alert ${alert.type} alert-popup`
-	if (alert?.active === true) {
-		return <span className={classes}>{alert.text}</span>
-	}
-  return false
+  const { activeAlert, alerts, consumeAlert } = useAlert();
+
+  // useEffect(() => {
+  //   if (alerts.length > 0) {
+  //     setTimeout(() => {
+  //       consumeAlert();
+  //     }, 5000);
+  //   }
+  // }, []);
+  const classes = "alert " + activeAlert?.type + "alert-popup";
+  if (alerts.length > 0) {
+    return <span className={classes}>{activeAlert?.text}</span>;
+  }
+  return false;
 }
