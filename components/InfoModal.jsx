@@ -50,7 +50,7 @@ export default function InfoModal({
       </button>
 
       {showModal && (
-        <div className="flex flex-col justify-between align-center modal" style={{height:"100vh"}}>
+        <div className="flex flex-col justify-start align-center modal" style={{height:"100vh"}}>
           {titleText && (
             <div className="modal-title-bar">
               <span className="modal-close-icon" onClick={handleClose}>
@@ -59,7 +59,7 @@ export default function InfoModal({
               <h2 className="text-center">{titleText}</h2>
             </div>
           )}
-          <div className="modal-content">{props.children}</div>
+          <div className="modal-content mb-4">{props.children}</div>
           <div className="flex flex-row justify-center align-center modal-action-bar">
             <button className="button-error" onClick={handleClose}>
               Close
