@@ -2,6 +2,7 @@ import moment from "moment";
 import React, { useState, useContext, createContext, useEffect } from "react";
 import { useAlert } from "./useAlert";
 import { useBasicAuth } from "./useBasicAuth";
+import { useIsLoading } from "./useIsLoading";
 
 export const initialDataValue = {
   data: null,
@@ -12,12 +13,30 @@ export const DataContext = createContext(initialDataValue);
 export default function DataProvider({ children }) {
   const [data, setDataFunc] = useState([]);
   const [structuredData, setStructuredData] = useState();
-  // const [pwd, setPwd] = useState("")
   // const {sendAlert, sendError} = useAlert()
+  //
+  // Bring in the pwd to authorize requests for data
+  // (TODO: change to an actual auth token)
+  //
   const { pwd } = useBasicAuth();
-  useEffect(() => {
-    console.log("sd", structuredData);
-  }, [structuredData]);
+  const { loadingState, setLoadingState, initialLoadingState } = useIsLoading();
+
+  const initialDataFilterValues = {
+    crossing_from: null,
+    crossing_to: null,
+    sailing_date: new Date(),
+    sailing_time: null,
+  };
+  // Used to populate the dropdowns etc.
+  const initialFormData = {
+    from_terminals: [],
+    to_terminals: [],
+    sailing_dates: [],
+    sailing_times: [],
+  };
+
+  const [dataFilter, setDataFilter] = useState(initialDataFilterValues);
+  const [formData, setFormData] = useState(initialFormData);
 
   const stripForKey = (input) => {
     return String(input)
@@ -27,23 +46,25 @@ export default function DataProvider({ children }) {
       .replace(".", "_");
   };
 
-  const getFilteredData = async ({
-    crossing_from = null,
-    crossing_to = null,
-    sailing_date = null,
-    sailing_time = null,
-  }) => {
+  const getFilteredData = async () => {
+    setLoadingState({
+      loading: true,
+      text: "Applying filters",
+      overlay: true,
+    });
+    const {
+      crossing_from,
+      crossing_to,
+      sailing_date,
+      sailing_time,
+    } = dataFilter;
     const authInfo = encodeURIComponent(pwd);
-    console.log('sailing_date', sailing_date)
+    console.log("sailing_date", sailing_date);
     const resp = await fetch(
       "/api/get-filtered-data?" +
         new URLSearchParams({
-          name: crossing_from
-            ? crossing_from
-            : "Sunshine Coast (Langdale) - Vancouver (Horseshoe Bay)",
-          dateOfSailing: sailing_date ? sailing_date : moment().format("yyyy-M-D")
-          ? crossing_from
-          : "Sunshine Coast (Langdale) - Vancouver (Horseshoe Bay)",
+          name: crossing_from,
+          dateOfSailing: moment(sailing_date).format("yyyy-M-D"),
         }),
       {
         headers: { "X-Password": authInfo },
@@ -52,46 +73,33 @@ export default function DataProvider({ children }) {
     const json = await resp.json();
 
     setData(json.capacity_data);
+    setLoadingState(initialLoadingState);
   };
 
   const setData = (d) => {
     setDataFunc(d);
-    // setStructuredData(
-    //   d.reduce(
-    //     (obj, row) => ({
-    //       ...obj,
-    //       [row.crossing_name]: {
-    //         ...obj[row.crossing_name],
-    //         [row.date_of_sailing]: {
-    //           ...(obj &&
-    //             obj[row.crossing_name] &&
-    //             obj[row.crossing_name][row.date_of_sailing]),
-    //           [stripForKey(row.time_of_sailing)]: {
-    //             ...(obj[row.crossing_name] &&
-    //               obj[row.crossing_name][row.date_of_sailing] &&
-    //               obj[row.crossing_name][row.date_of_sailing][
-    //                 stripForKey(row.time_of_sailing)
-    //               ] &&
-    //               obj[row.crossing_name][row.date_of_sailing][
-    //                 stripForKey(row.time_of_sailing)
-    //               ]),
-    //             [String(row.date_recorded + " " + stripForKey(row.time_recorded)).split("+")[0]]: [
-    //               {
-    //                 "x": row.date_of_sailing + " " + row.time_of_sailing,
-    //                 "y": row.percent_available,
-    //               },
-    //             ],
-    //           },
-    //         },
-    //       },
-    //     }),
-    //     {},
-    //   ),
-    // );
+  };
+
+  const resetFilter = async () => {
+    // TODO: merge this with the new filtering
+    // setLoading(true, "Loading Fresh Data");
+
+    setDataFilter(initialDataFilterValues)
+    await getLimitedData()
   };
 
   const refreshData = async () => {
+    // TODO: merge this with the new filtering
     // setLoading(true, "Loading Fresh Data");
+
+    if (dataFilter.crossing_from !== "") {
+      await getFilteredData();
+    } else {
+      await getLimitedData()
+    }
+  };
+
+  const getLimitedData = async () => {
     const authInfo = encodeURIComponent(pwd);
     const resp = await fetch("/api/get-limited-data", {
       headers: { "X-Password": authInfo },
@@ -99,7 +107,6 @@ export default function DataProvider({ children }) {
     const json = await resp.json();
 
     setData(json.capacity_data);
-    // setLoading(false);
   };
 
   const getFullData = async () => {
@@ -123,6 +130,11 @@ export default function DataProvider({ children }) {
         getFullData,
         structuredData,
         getFilteredData,
+        dataFilter,
+        setDataFilter,
+        formData,
+        setFormData,
+        resetFilter,
       }}
     >
       {children}
@@ -138,6 +150,11 @@ export const useData = () => {
     getFullData,
     structuredData,
     getFilteredData,
+    dataFilter,
+    setDataFilter,
+    formData,
+    setFormData,
+    resetFilter,
   } = useContext(DataContext);
   return {
     data,
@@ -146,5 +163,10 @@ export const useData = () => {
     getFullData,
     structuredData,
     getFilteredData,
+    dataFilter,
+    setDataFilter,
+    formData,
+    setFormData,
+    resetFilter,
   };
 };
