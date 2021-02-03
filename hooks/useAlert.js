@@ -1,10 +1,9 @@
 import { useState, useContext, createContext } from "react";
-import {useToasts } from 'react-toast-notifications'
-
+import { useToasts } from "react-toast-notifications";
 
 export const initialAlertValue = {
-	alerts: [],
-	activeAlert: null,
+  alerts: [],
+  activeAlert: null,
   consumeAlert: () => {},
   setAlert: (_) => {},
   sendAlert: (_) => {},
@@ -18,16 +17,16 @@ import React from "react";
 
 export default function AlertProvider({ children }) {
   const [alerts, setAlert] = useState([]);
-	const [activeAlert, setActiveAlert] = useState(null);
-	const { addToast } = useToasts()
+  const [activeAlert, setActiveAlert] = useState(null);
+  const { addToast } = useToasts();
 
   const resetAlert = () => {
     setAlert([]);
   };
 
   const sendAlert = (text) => {
-		addToast(text, {appearance: "success", autoDismiss: true})
-		// setAlert([
+    addToast(text, { appearance: "success", autoDismiss: true });
+    // setAlert([
     //   ...alerts,
     //   {
     //     text,
@@ -38,7 +37,7 @@ export default function AlertProvider({ children }) {
   };
 
   const sendError = (text) => {
-		addToast(text, {appearance: "success", autoDismiss: true})
+    addToast(text, { appearance: "success", autoDismiss: true });
     // setAlert([
     //   ...alerts,
     //   {
@@ -49,10 +48,14 @@ export default function AlertProvider({ children }) {
     // ]);
   };
 
+  const sendInfo = (text) => {
+    addToast(text, { appearance: "info", autoDismiss: true });
+  };
+
   const consumeAlert = () => {
     if (alerts.length === 0) {
-			setActiveAlert(null)
-		};
+      setActiveAlert(null);
+    }
     const consumed = alerts[0];
     setAlert(alerts.slice(1));
     setActiveAlert(consumeAlert);
@@ -68,6 +71,7 @@ export default function AlertProvider({ children }) {
         sendError,
         resetAlert,
         consumeAlert,
+        sendInfo,
       }}
     >
       {children}
@@ -76,9 +80,15 @@ export default function AlertProvider({ children }) {
 }
 
 export const useAlert = () => {
-  const { activeAlert, alerts, resetAlert, sendAlert, sendError, consumeAlert } = useContext(
-    AlertContext,
-  );
+  const {
+    activeAlert,
+    alerts,
+    resetAlert,
+    sendAlert,
+    sendError,
+    consumeAlert,
+    sendInfo,
+  } = useContext(AlertContext);
   return {
     activeAlert,
     alerts,
@@ -86,5 +96,6 @@ export const useAlert = () => {
     resetAlert,
     sendAlert,
     sendError,
+    sendInfo,
   };
 };
