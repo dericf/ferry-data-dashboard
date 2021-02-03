@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useData } from "../../../hooks/useData";
 import { useIsLoading } from "../../../hooks/useIsLoading";
 import { DEFAULT_TERMINALS } from "../../../utilities/constants";
 import InfoModal from "../../InfoModal";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 export const Filter = () => {
   const {
     data,
@@ -17,6 +20,10 @@ export const Filter = () => {
 
   const { loadingState, setLoadingState, initialLoadingState } = useIsLoading();
 
+  useEffect(() => {
+    (async () => await getFilteredData())();
+  }, [dataFilter]);
+
   const handleFilterChange = async (e) => {
     // Any time a filter option is changed
     e.preventDefault();
@@ -24,9 +31,15 @@ export const Filter = () => {
       ...dataFilter,
       [e.target.name]: e.target.value,
     });
-    
-    await getFilteredData()
+    await applyFilter()
+  };
 
+  const handleDateChange = async (date) => {
+    setDataFilter({
+      ...dataFilter,
+      sailing_date: date,
+    });
+    await applyFilter()
   };
 
   const applyFilter = async (e) => {
@@ -34,8 +47,7 @@ export const Filter = () => {
       loading: true,
       text: "Loading Data",
       overlay: false,
-    });
-    e.preventDefault();
+    })
     await getFilteredData();
     setLoadingState(initialLoadingState);
   };
@@ -49,13 +61,17 @@ export const Filter = () => {
           <label htmlFor="">Select a Crossing</label>
           <select
             className="text-center"
-            style={{maxWidth: "90vw"}}
+            style={{ maxWidth: "90vw" }}
             name="crossing_from"
             id="crossing_from"
             onChange={handleFilterChange}
             value={dataFilter.crossing_from ? dataFilter.crossing_from : ""}
           >
-            <option className="text-center" key={"EmptyCrossingFromOption"} value={""}>
+            <option
+              className="text-center"
+              key={"EmptyCrossingFromOption"}
+              value={""}
+            >
               All
             </option>
             {DEFAULT_TERMINALS.map((terminalOption) => (
@@ -69,12 +85,18 @@ export const Filter = () => {
         {dataFilter.crossing_from && (
           <div className="flex flex-col justify-end align-start my-2 ml-2">
             <label htmlFor="">Crossing Date</label>
-            <input
+            {/* <input
               type="date"
               name="sailing_date"
               onChange={handleFilterChange}
               value={dataFilter.sailing_date}
+            /> */}
+
+            <DatePicker
+              selected={dataFilter.sailing_date}
+              onChange={handleDateChange}
             />
+
             {/* <label htmlFor="">Crossing Time (not implemented yet)</label> */}
             {/* <input
               type="time"
@@ -100,7 +122,7 @@ export const Filter = () => {
         )}
 
         <div className="my-2">
-          <button
+          {/* <button
             className="button-success mx-2 my-1"
             disabled={
               !dataFilter.crossing_from ||
@@ -109,7 +131,7 @@ export const Filter = () => {
             onClick={applyFilter}
           >
             Apply Filter
-          </button>
+          </button> */}
 
           <button
             className="button mx-2 my-1"
