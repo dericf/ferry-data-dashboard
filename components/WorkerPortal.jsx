@@ -21,8 +21,6 @@ export default function WorkerPortal() {
   const { pingServer } = usePingServer(setBotOffline);
 
   const { isAuthenticated, pwd } = useBasicAuth();
-
-  // const {alertText, setAlertText, setAlertStatus} = useAlertPopup()
   const { sendAlert, sendError } = useAlert();
 
   useEffect(() => {
@@ -43,13 +41,7 @@ export default function WorkerPortal() {
     };
   }, []);
 
-  useEffect(() => {
-    if (open === true) {
-      getStatus();
-    }
-  }, [open]);
-
-  const getStatus = async () => {
+  const getStatus = async (withAlert=false) => {
     // console.log("Getting status");
     if (!isAuthenticated || botOffline) {
       return false;
@@ -67,7 +59,7 @@ export default function WorkerPortal() {
         sendError("Error updating status");
         setStatus(null);
       } else {
-        sendAlert("Bot status was updated.");
+        withAlert && sendAlert("Bot status was updated.");
         const json = await resp.json();
         // console.log(json);
         setStatus(json);
@@ -153,10 +145,6 @@ export default function WorkerPortal() {
     }
   };
 
-  if (!isAuthenticated) {
-    return false;
-  }
-
   if (botOffline === true) {
     return (
       <div className="flex flex-col justify-center p-2 mx-2 my-2">
@@ -174,169 +162,160 @@ export default function WorkerPortal() {
   }
 
   return (
-    <div className="flex flex-row flex-wrap p-2 mx-2 my-2">
+    <div className="flex flex-row flex-wrap mx-2 my-3">
       <div className="flex flex-row justify-around flex-wrap align-stretch">
-        {isAuthenticated && (
-          <div className="flex flex-col justify-around align-stretch ">
-            <h3 className="text-center">Bot Controls</h3>
-            <InfoModal
-              titleText={`Bot/Web Scraper Controls`}
-              triggerText={"Control Panel"}
-              fullHeight={true}
-              disabled={!isAuthenticated}
-              onOpen={() => getStatus()}
-            >
-              <div className="flex flex-col justify-center align-center">
-                <div className="flex flex-row flex-wrap justify-center my-2">
-                  <button
-                    className="button-secondary my-2 mx-2"
-                    onClick={getStatus}
-                  >
-                    Refresh Status
-                  </button>
-                  <button
-                    className="button-success my-2 mx-2"
-                    onClick={startBot}
-                  >
-                    Start Bot
-                  </button>
+        <div className="flex flex-col justify- align-stretch ">
+          <h3 className="text-center">Bot Controls</h3>
+          <div className="flex flex-col align-center">
+            <div className="flex row flex-wrap justify-center">
+              <span className="alert white text-center text-small">
+                Ongoing: {status?.STARTED_JOBS?.length | "?"}
+              </span>
+              <span className="alert white text-center text-small">
+                Upcoming: {status?.SCHEDULED_JOBS?.length | "?"}
+              </span>
+              <span className="alert white text-center text-small">
+                Finished: {status?.FINISHED_JOBS?.length | "?"}
+              </span>
+            </div>
+          </div>
+          <InfoModal
+            titleText={`Bot/Web Scraper Controls`}
+            triggerText={"Control Panel"}
+            fullHeight={true}
+            disabled={!isAuthenticated}
+            onOpen={async () => await getStatus()}
+          >
+            <div className="flex flex-col justify-center align-center">
+              <span className="alert success text-large">
+                Status Last Updated: <strong>{statusLastUpdated}</strong>
+              </span>
+              <div className="flex flex-row flex-wrap justify-center my-2">
+                <button
+                  className="button-secondary my-2 mx-2"
+                  onClick={(e) => (getStatus(true))}
+                >
+                  Refresh Status
+                </button>
+                <button className="button-success my-2 mx-2" onClick={startBot}>
+                  Start Bot
+                </button>
 
-                  <button
-                    className="button-warning my-2 mx-2"
-                    onClick={testBot}
-                  >
-                    Run 1 Test
-                  </button>
-                  <button className="button-error my-2 mx-2" onClick={stopBot}>
-                    Stop Bot
-                  </button>
-                </div>
+                <button className="button-warning my-2 mx-2" onClick={testBot}>
+                  Run 1 Test
+                </button>
+                <button className="button-error my-2 mx-2" onClick={stopBot}>
+                  Stop Bot
+                </button>
+              </div>
 
-                <span className="alert success text-large">
-                  Status Last Updated: {statusLastUpdated}
-                </span>
-                <span className="alert success text-large">
-                  {/* <input
+              <span className="alert success text-large">
+                {/* <input
                     type="text"
                     name="statusUpdateFreq"
                     id="statusUpdateFreq"
                     value={botStatusUpdateFreq}
                     onChange={(e) => setBotStatusUpdateFreq(Number(e.target.value))}
                   /> */}
-                </span>
-                <Divider />
-                <table>
-                  <thead>
-                    <tr>
-                      <th colSpan="2">Running Jobs</th>
+              </span>
+              <Divider className="mt-4" />
+              <table style={{ minWidth: 500 }}>
+                <thead>
+                  <tr>
+                    <th colSpan="2">Running Jobs</th>
+                  </tr>
+                  <tr>
+                    <th>Job ID</th>
+                    <th>Created At</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {status?.STARTED_JOBS?.length == 0 && (
+                    <tr key="noStartedJobs">
+                      <td className="center" colSpan="2">
+                        No Running Jobs. Worker is Idle.
+                      </td>
                     </tr>
-                    <tr>
-                      <th>Job ID</th>
-                      <th>Created At</th>
+                  )}
+                  {status?.STARTED_JOBS?.map((job) => (
+                    <tr key={job.id}>
+                      <td className="center">{job.id}</td>
+                      <td className="center">
+                        {timeFormat(job.created_at, true)}
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {status?.STARTED_JOBS?.length == 0 && (
-                      <tr key="noStartedJobs">
-                        <td className="center" colSpan="2">
-                          No Running Jobs. Worker is Idle.
-                        </td>
-                      </tr>
-                    )}
-                    {status?.STARTED_JOBS?.map((job) => (
-                      <tr key={job.id}>
-                        <td className="center">{job.id}</td>
-                        <td className="center">
-                          {timeFormat(job.created_at, true)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                  ))}
+                </tbody>
+              </table>
 
-                <Divider />
+              <Divider  className="mt-4"/>
 
-                <table>
-                  <thead>
-                    <tr>
-                      <th colSpan="2">Upcoming Jobs</th>
+              <table style={{ minWidth: 500 }}>
+                <thead>
+                  <tr>
+                    <th colSpan="2">Upcoming Jobs</th>
+                  </tr>
+                  <tr>
+                    <th>Job ID</th>
+                    <th>Will Run At</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {status?.SCHEDULED_JOBS?.length == 0 && (
+                    <tr key="noScheduledJobs">
+                      <td className="center" colSpan="2">
+                        No Scheduled Jobs
+                      </td>
                     </tr>
-                    <tr>
-                      <th>Job ID</th>
-                      <th>Will Run At</th>
+                  )}
+                  {status?.SCHEDULED_JOBS?.map((job) => (
+                    <tr key={job.id}>
+                      <td className="center">{job.id}</td>
+                      <td className="center">
+                        {timeFormat(
+                          moment(job.created_at).add(1, "minute"),
+                          true,
+                        )}
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {status?.SCHEDULED_JOBS?.length == 0 && (
-                      <tr key="noScheduledJobs">
-                        <td className="center" colSpan="2">
-                          No Scheduled Jobs
-                        </td>
-                      </tr>
-                    )}
-                    {status?.SCHEDULED_JOBS?.map((job) => (
-                      <tr key={job.id}>
-                        <td className="center">{job.id}</td>
-                        <td className="center">
-                          {timeFormat(
-                            moment(job.created_at).add(1, "minute"),
-                            true,
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                  ))}
+                </tbody>
+              </table>
 
-                <Divider />
-                <table>
-                  <thead>
-                    <tr>
-                      <th colSpan="2">Finished Jobs</th>
+              <Divider />
+              <table style={{ minWidth: 500 }}>
+                <thead>
+                  <tr>
+                    <th colSpan="2">Finished Jobs</th>
+                  </tr>
+                  <tr>
+                    <th>Job ID</th>
+                    <th>Finshed At</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {status?.FINISHED_JOBS?.length == 0 && (
+                    <tr key="noFinishedJobs">
+                      <td className="center" colSpan="2">
+                        No Finished Jobs
+                      </td>
                     </tr>
-                    <tr>
-                      <th>Job ID</th>
-                      <th>Finshed At</th>
+                  )}
+                  {status?.FINISHED_JOBS?.map((job) => (
+                    <tr key={job.id}>
+                      <td className="center">{job.id}</td>
+                      <td className="center">
+                        {timeFormat(job.ended_at, true)}
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {status?.FINISHED_JOBS?.length == 0 && (
-                      <tr key="noFinishedJobs">
-                        <td className="center" colSpan="2">
-                          No Finished Jobs
-                        </td>
-                      </tr>
-                    )}
-                    {status?.FINISHED_JOBS?.map((job) => (
-                      <tr key={job.id}>
-                        <td className="center">{job.id}</td>
-                        <td className="center">
-                          {timeFormat(job.ended_at, true)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                  ))}
+                </tbody>
+              </table>
 
-                <div className="my-4"></div>
-              </div>
-            </InfoModal>
-
-            <div className="flex flex-col align-center">
-              <div className="flex row flex-wrap justify-between mt-2">
-                <span className="alert white text-left text-small">
-                  Ongoing: {status?.STARTED_JOBS?.length | "?"}
-                </span>
-                <span className="alert white text-left text-small">
-                  Upcoming: {status?.SCHEDULED_JOBS?.length | "?"}
-                </span>
-                <span className="alert white text-left text-small">
-                  Finished: {status?.FINISHED_JOBS?.length | "?"}
-                </span>
-              </div>
+              <div className="my-4"></div>
             </div>
-          </div>
-        )}
+          </InfoModal>
+        </div>
       </div>
     </div>
   );
