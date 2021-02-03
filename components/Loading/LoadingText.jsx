@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export const LoadingText = () => {
+export const LoadingText = ({ text = "Loading" }) => {
   const [dotCount, setDotCount] = useState(["."]);
   useEffect(() => {
     let timeoutId = setTimeout(() => {
@@ -9,15 +9,16 @@ export const LoadingText = () => {
       } else {
         setDotCount(["."]);
       }
-    }, 200);
+    }, 400);
     return () => clearTimeout(timeoutId);
   }, [dotCount]);
 
   return (
-    <span>Loading 
+    <>
+      {text}
       {dotCount.map((dot, index) => (
         <span key={dot + index}>{dot}</span>
       ))}
-    </span>
+    </>
   );
 };
