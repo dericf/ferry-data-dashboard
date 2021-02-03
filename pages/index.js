@@ -1,8 +1,5 @@
-import React from 'react'
-import Dashboard from '../components/DashBoard/DashBoard'
+import React, { useEffect } from "react";
 
 export default function index() {
-  return (
-    <Dashboard />
-  )
+  return <> </>;
 }
