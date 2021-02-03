@@ -1,3 +1,21 @@
+input[type=color], input[type=date], input[type=datetime-local], input[type=datetime], input[type=email], input[type=month], input[type=number], input[type=password], input[type=search], input[type=tel], input[type=text], input[type=time], input[type=url], input[type=week], select, textarea {
+	padding: 0.75rem 1.5rem;	display: inline-block;
+	border: 1px solid #ccc;
+	-webkit-box-shadow: inset 0 1px 3px #ddd;
+	box-shadow: inset 0 1px 3px #ddd;
+	border-radius: 4px;
+	vertical-align: middle;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+button, input, optgroup, select, textarea {
+	font-family: inherit;
+	font-size: 100%;
+	line-height: 1.15;
+	margin: 0;
+}
+
 button {
 	/* padding: 0.5rem 1.5rem;
 	border-radius: 0.25rem;
@@ -7,7 +25,7 @@ button {
 	margin-bottom: 0.25rem; */
 
 	font-size: 100%;
-	padding: .5em 1em;
+	padding: .25em 1em;
 	color: rgba(0,0,0,.8);
 	border: transparent;
 	background-color: #e6e6e6;
@@ -46,14 +64,14 @@ button {
 	box-sizing: border-box;
 	margin: 0em;
 	font: 400 16px Arial;
-	padding: 0.75rem 1.5rem;
+	
 	border-width: 2px;
 	border-style: outset;
 	border-color: -internal-light-dark(rgb(118, 118, 118), rgb(133, 133, 133));
 	border-image: initial;
+	border-radius: 4px;
 
 }
-
 .button-success,
 .button-error,
 .button-warning,
@@ -86,7 +104,7 @@ button {
 }
 
 .button-primary {
-	background: rgb(66, 184, 221);
+	background: rgb(66, 120, 221);
 	/* this is a light blue */
 }
 
