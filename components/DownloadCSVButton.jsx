@@ -12,7 +12,7 @@ export default function DownloadCSVButton() {
   const [disableDownload, setDisableDownload] = useState(true);
   const { setLoading } = useLoadingScreen();
   const [triggerDownload, setTriggerDownload] = useState();
-  const { sendAlert, sendError } = useAlert();
+  const { sendAlert, sendError, sendInfo } = useAlert();
   const [isProcessing, setIsProcessing] = useState()
 
   const download = async () => {
@@ -24,7 +24,7 @@ export default function DownloadCSVButton() {
   const requestDataset = async (e) => {
     setIsProcessing(true);
     e.preventDefault();
-    sendAlert("Fetching Full Dataset. Please Wait.");
+    sendInfo("Fetching Full Dataset. Please Wait.");
     // Fetch the dataset
     const authInfo = encodeURIComponent(pwd);
     const resp = await fetch(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/data/get-full-dataset`, {
@@ -65,7 +65,7 @@ export default function DownloadCSVButton() {
           className="button-secondary mt-2"
           onClick={requestDataset}
         >
-          { isProcessing === true ? <LoadingText /> : (!disableDownload ? "Re-Request Latest Data Set" : "Request Full Data Set")}
+          { isProcessing === true ? <span><LoadingText /></span> : (!disableDownload ? "Re-Request Latest Data Set" : "Request Full Data Set")}
         </button>
 
         {!disableDownload && (
