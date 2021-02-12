@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
+import { useIsLoading } from '../hooks/useIsLoading';
 
-export default function LoadingBackdrop({message}) {
+export default function LoadingBackdrop() {
 	const [dotCount, setDotCount] = useState(['.'])
+	const {loadingState} = useIsLoading()
 	useEffect(() => {
 		let timeoutId = setTimeout(() => {
 			if (dotCount.length < 10) {
@@ -18,8 +20,8 @@ export default function LoadingBackdrop({message}) {
 
 	return (
 		<div className="loading">
-			<div>{message && (<h2>{message}</h2>)}</div>
-			<div><h3>{dotCount.map((dot, index) => <span key={dot+index}>{dot}</span>)}</h3></div>
+			{loadingState.text && (<h2>{loadingState.text}</h2>)}
+			<h3>{dotCount.map((dot, index) => <span key={dot+index}>{dot}</span>)}</h3>
 		</div>
 	)
 }

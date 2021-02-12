@@ -3,10 +3,10 @@ import Plot from "react-plotly.js";
 import { useData } from "../../../hooks/useData";
 import { timeFormat } from "../../../utilities/dates";
 
-export const LineChart = ({ filter, showChart = null }) => {
+export const LineChart = () => {
   const [barChartData, setBarChartData] = useState(null);
-  const { data } = useData();
-
+  const { data, dataFilter } = useData();
+  
   const reFormatData = () => {
     let builderObject = {};
     // Build the basic structure of the object
@@ -33,8 +33,16 @@ export const LineChart = ({ filter, showChart = null }) => {
 
   useEffect(() => {
     setBarChartData(reFormatData());
+  }, []);
+  
+  useEffect(() => {
+    console.log("data...");
+    setBarChartData(reFormatData());
   }, [data]);
+
   const layout = {
+    width: 4*window?.innerWidth/5,
+    height: window?.innerHeight/2,
     xaxis: { title: "Date & Time" },
     yaxis: { title: "Capacity Available (%)", range: [0, 100] },
     barmode: "group",
@@ -48,16 +56,17 @@ export const LineChart = ({ filter, showChart = null }) => {
     },
   };
   return (
-    <>
-      {barChartData && showChart && barChartData.length == 0 && (
+    <div className="flex flex-col justify-center align-center overflow-x-auto px-4">
+      {barChartData && barChartData.length == 0 && (
 				<h2>No Results</h2>
 			)}
-      {barChartData && showChart && barChartData.length > 0 && (
+      {barChartData && barChartData.length > 0 && (
         <>
-          {filter.crossing_from && (<h2>{filter.crossing_from}</h2>)}
+          {dataFilter.crossing_from && (<h2>{dataFilter.crossing_from}</h2>)}
+          {/* TODO: set the figure object so we can change properties dynamically */}
           <Plot data={barChartData} layout={layout} />
         </>
       )}
-    </>
+    </div>
   );
 };

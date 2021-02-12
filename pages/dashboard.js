@@ -1,6 +1,13 @@
-import DashBoard from "../components/DashBoard/DashBoard"
+import { LoginForm } from "../components/Auth/LoginForm";
+import DashBoard from "../components/DashBoard/DashBoard";
+import { Layout } from "../components/Layout";
+import { useBasicAuth } from "../hooks/useBasicAuth";
 export default function DashboardPage() {
-	return (
-		<DashBoard />
-	)
+  const { isAuthenticated } = useBasicAuth();
+
+  return (
+    <Layout>
+      <DashBoard />
+    </Layout>
+  );
 }
