@@ -21,11 +21,6 @@ export default function BasicAuthProvider({ children }) {
 	const router = useRouter()
 
   const tryAuthenticateWithPassword = async (pwd) => {
-    setLoadingState({
-      isLoading: true,
-      text: "Loging you in",
-      overlay: true,
-    });
     const res = await fetch("/api/authenticate", {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -39,7 +34,6 @@ export default function BasicAuthProvider({ children }) {
       setisAuthenticated(false);
       sendError("Wrong Password");
     }
-    setLoadingState(initialLoadingState);
   };
 
   const logout = () => {
