@@ -1,0 +1,44 @@
+/* Import like so from main.css: @import './tailwind.css' */
+
+/* purgecss start ignore */
+@tailwind base;
+@tailwind components;
+/* purgecss end ignore */
+@tailwind utilities;
+
+@layer components {
+  /* Buttons */
+	button {
+		@apply disabled:opacity-50 disabled:cursor-not-allowed;
+	}
+
+  /* Typography */
+  .heading-1 {
+    @apply text-4xl;
+  }
+
+  .label-block {
+    @apply block text-sm font-medium text-gray-700;
+  }
+	.label {
+		@apply font-medium text-gray-700;
+	}
+
+  /* Forms */
+
+  .input-basic {
+    @apply block sm:max-w-xs w-full px-4 py-1 text-base appearance-none border border-gray-300 shadow-none bg-white rounded-md placeholder-gray-500 focus:outline-none focus:border-blue-300;
+  }
+
+  .textarea {
+    @apply shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md;
+  }
+
+  .select {
+    @apply mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm;
+  }
+
+	.checkbox {
+		@apply focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded;
+	}
+}
