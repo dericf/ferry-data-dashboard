@@ -1,5 +1,7 @@
 import { useBasicAuth } from "../../hooks/useBasicAuth";
+import { useLoading } from "../../hooks/useLoading";
 import { usePingServer } from "../../hooks/usePingServer";
+import { Button } from "../Button";
 
 export const LoginForm = () => {
   const {
@@ -10,39 +12,39 @@ export const LoginForm = () => {
     tryAuthenticateWithPassword,
   } = useBasicAuth();
 
+  const { isLoading, setIsLoading } = useLoading();
+
   const { pingServer } = usePingServer();
 
   return (
-    <form
-      className="flex flex-col align-stretch px-2 py-3 mx-auto"
-      style={{ maxWidth: "25vw", minWidth: 320 }}
-    >
-      <span className="alert text-large text-center">
-        Not Authenticated
-      </span>
-
-      <>
-        <input
-          className="text-center"
-          type="password"
-          name="password"
-          id="password"
-          placeholder="password"
-          autoComplete="autocomplete"
-          value={pwd}
-          onChange={(e) => setPwd(e.target.value)}
-        />
-        <button
-          className="button-success mt-1"
-          disabled={pwd.length < 4}
-          onClick={async (e) => {
-            e.preventDefault();
-            await tryAuthenticateWithPassword(pwd);
-          }}
-        >
-          Authenticate
-        </button>
-      </>
+    <form className="flex flex-col p-8 bg-gray-50 mx-auto shadow-md" method="post" action="#">
+      <input
+        className={`input-basic text-center`}
+        type="password"
+        name="password"
+        id="password"
+        placeholder="password"
+        autoComplete="autocomplete"
+        value={pwd}
+        onChange={(e) => setPwd(e.target.value)}
+      />
+      <Button
+        color="blue"
+        className="mt-2"
+        loading={isLoading}
+        type="submit"
+        disabled={pwd.length === 0}
+        onClick={async (e) => {
+          setIsLoading(true);
+          e.preventDefault();
+          await tryAuthenticateWithPassword(pwd);
+          setTimeout(() => {
+            setIsLoading(false);
+          }, 400);
+        }}
+      >
+        Log In
+      </Button>
     </form>
   );
 };
