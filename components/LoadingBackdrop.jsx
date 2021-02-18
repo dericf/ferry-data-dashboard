@@ -19,9 +19,9 @@ export default function LoadingBackdrop() {
 	}, [dotCount])
 
 	return (
-		<div className="loading">
-			{loadingState.text && (<h2>{loadingState.text}</h2>)}
-			<h3>{dotCount.map((dot, index) => <span key={dot+index}>{dot}</span>)}</h3>
+		<div className="flex flex-col fixed left-0 top-0 h-screen w-screen justify-center align-center bg-blue-500 opacity-100">
+			{loadingState.text && (<h2 className="text-4xl text-center">{loadingState.text}</h2>)} 
+			<h3 className="text-2xl text-center">{dotCount.map((dot, index) => <span key={dot+index}>{dot}</span>)}</h3>
 		</div>
 	)
 }
