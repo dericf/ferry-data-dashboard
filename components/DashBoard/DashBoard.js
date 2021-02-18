@@ -21,11 +21,12 @@ import { DataVisualizer } from "./DataVisualizer";
 import { Filter } from "./Filter";
 import { useIsLoading } from "../../hooks/useIsLoading";
 import dynamic from "next/dynamic";
+import { LoadingText } from "../Loading/LoadingText";
 // import { DataVisualizer from "./DataVisualizer
 
 const DynamicLineChart = dynamic(
   () => import("./Charts/LineChart").then((mod) => mod.LineChart),
-  { ssr: false },
+  { ssr: false, loading: () => <LoadingText text={"Loading Chart"} /> },
 );
 
 export default function Dashboard() {
@@ -51,24 +52,19 @@ export default function Dashboard() {
         <title>Ferry Data Dashboard</title>
         <link key="favicon" rel="icon" href="/favicon.ico" />
       </Head>
-      <AlertPopup />
       <LogoutButton />
 
-      <div className="flex flex-row flex-shrink flex-no-grow justify-center align-end flex-wrap">
+      <div className="flex flex-row flex-shrink flex-no-grow justify-center align-end flex-wrap shadow-md py-4">
         <WorkerPortal></WorkerPortal>
-
-        <div className="flex flex-col my-3">
-          {/* <DataVisualizer /> */}
-
-          <DownloadCSVButton />
-        </div>
       </div>
 
-      <div className="flex flex-col align-center" style={{ width: "95vw" }}>
-        <Filter />
-        <div className={"mb-3"}>
-        {data && data.length > 0 && <DynamicLineChart />}
-        </div>
+      <div className="flex flex-col align-middle px-4 mt-4  " style={{ width: "95vw" }}>
+        {/* <Filter /> */}
+        {/* {data && data.length > 0 && (
+          <div className={"mb-3"}>
+            <DynamicLineChart />
+          </div>
+        )} */}
         <DataTable></DataTable>
       </div>
     </>
