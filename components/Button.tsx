@@ -1,18 +1,20 @@
+import { FunctionComponent, PropsWithChildren, ReactChildren } from "react";
+
 type ButtonColor = "white" | "blue" | "green" | "red";
 
 interface Props {
   color: ButtonColor;
-  loading: boolean;
-  className: string;
-  props: any;
+  loading?: boolean;
+  className?: string;
 }
 
-export const Button = ({
+export const Button: FunctionComponent<Props> = ({
   color = "white",
   loading = false,
   className = "",
+  children,
   ...props
-}: Props) => {
+}) => {
   let colorClasses = "";
   switch (color) {
     case "blue":
@@ -51,7 +53,7 @@ export const Button = ({
           />
         </svg>
       ) : (
-        props.children
+        children
       )}
     </button>
   );
