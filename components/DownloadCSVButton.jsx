@@ -4,6 +4,7 @@ import { useAlert } from "../hooks/useAlert";
 import { useBasicAuth } from "../hooks/useBasicAuth";
 import { useLoadingScreen } from "../hooks/useLoadingScreen";
 import { headers } from "../utilities/csv_helpers";
+import { Button } from "./Button";
 import { LoadingText } from "./Loading/LoadingText";
 
 export default function DownloadCSVButton() {
@@ -44,10 +45,6 @@ export default function DownloadCSVButton() {
     }
   };
 
-  if (!isAuthenticated) {
-    return false;
-  }
-
   return (
     <>
       {triggerDownload && (
@@ -59,25 +56,28 @@ export default function DownloadCSVButton() {
         ></CSVDownload>
       )}
 
-      <div className="flex flex-col justify-between ">
-        <button
+
+        <Button
           disabled={!isAuthenticated}
-          className="button-secondary mt-2"
+          color="white"
+          className="mb-3 mr-3"
+          loading={isProcessing === true}
           onClick={requestDataset}
         >
-          { isProcessing === true ? <span><LoadingText /></span> : (!disableDownload ? "Re-Request Latest Data Set" : "Request Full Data Set")}
-        </button>
+          {(!disableDownload ? "Re-Request Full Data Set" : "Request Full Data Set")}
+        </Button>
 
         {!disableDownload && (
-          <button
+          <Button
             disabled={disableDownload}
-            className="button-success mt-2"
+            className="mb-3 mr-3"
+            color="green"
             onClick={download}
           >
             Download CSV
-          </button>
+          </Button>
         )}
-      </div>
+
     </>
   );
 }
