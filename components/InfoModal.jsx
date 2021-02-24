@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { Button } from "./Button";
 
 export default function InfoModal({
   triggerText = "View",
   disabled = null,
   fullHeight = false,
   titleText = null,
-  triggerBackgroundColor=null,
+  triggerBackgroundColor = null,
   onOpen = () => {},
   ...props
 }) {
@@ -13,15 +14,16 @@ export default function InfoModal({
 
   const closeOnEscape = (e) => {
     if (e.key === "Escape") {
-      handleClose()
+      handleClose();
     }
-  }
+  };
 
   useEffect(() => {
     if (document) document?.addEventListener("keydown", closeOnEscape, false);
 
     return () => {
-      if (document) document?.removeEventListener("keydown", closeOnEscape, false);
+      if (document)
+        document?.removeEventListener("keydown", closeOnEscape, false);
     };
   }, []);
 
@@ -38,32 +40,47 @@ export default function InfoModal({
   const handleClick = async () => {
     setShowModal(true);
   };
-  const triggerButtonClasses = `button${triggerBackgroundColor ? "-" + triggerBackgroundColor : "" }`
+  
   return (
     <>
-      <button
-        className={triggerButtonClasses}
+      <Button
+        color="green"
+        className="mt-2"
         disabled={disabled}
         onClick={handleClick}
       >
         {triggerText}
-      </button>
+      </Button>
 
       {showModal && (
-        <div className="flex flex-col justify-start align-center modal" style={{height:"100vh"}}>
+        <div
+          className="fixed top-0 left-0 h-screen w-screen flex flex-col justify-start align-middle bg-white align-center z-40"
+          style={{ height: "100vh" }}
+        >
           {titleText && (
-            <div className="modal-title-bar">
-              <span className="modal-close-icon" onClick={handleClose}>
-                <strong>X</strong>
-              </span>
-              <h2 className="text-center">{titleText}</h2>
+            <div className="bg-blue-400 text-white m-0 py-4 px-2">
+              <svg
+                className="w-4 h-4 hover:shadow-md cursor-pointer fixed right-4 top-4 z-50"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                onClick={handleClose}
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+
+              <h2 className="text-4xl text-center">{titleText}</h2>
             </div>
           )}
-          <div className="modal-content mb-4">{props.children}</div>
-          <div className="flex flex-row justify-center align-center modal-action-bar">
-            <button className="button-error" onClick={handleClose}>
+          <div className="mb-4 mx-auto h-full w-full px-8 py-4 overflow-auto">{props.children}</div>
+          <div className="flex flex-row justify-center align-center modal-action-bar px-8 py-4">
+            <Button color="red" className="button-error" onClick={handleClose}>
               Close
-            </button>
+            </Button>
           </div>
         </div>
       )}

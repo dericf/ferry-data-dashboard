@@ -4,15 +4,14 @@ import { LoginForm } from "./Auth/LoginForm";
 import { MainTitle } from "./Headings/MainTitle";
 import LoadingBackdrop from "./LoadingBackdrop";
 
-export const Layout = ({children}) => {
-	const { isAuthenticated } = useBasicAuth();
+export const Layout = ({ children }) => {
+  const { isAuthenticated } = useBasicAuth();
   const { loadingState } = useIsLoading();
-	return (
-		<div className="flex flex-col align-center">
-		<MainTitle />
-
-		{isAuthenticated === false ? <LoginForm /> : children }
-		{loadingState?.overlay && <LoadingBackdrop />}
-		</div>
-	)
-}
+  return (
+    <main className=" py-6 lg:px-3 2xl:container 2xl:mx-auto min-h-screen flex flex-col justify-center align-middle overflow-y-auto">
+      <MainTitle />
+      {children}
+      {loadingState?.overlay && <LoadingBackdrop />}
+    </main>
+  );
+};

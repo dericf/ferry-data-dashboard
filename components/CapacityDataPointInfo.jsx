@@ -7,51 +7,42 @@ import { dateFormat, timeFormat } from "../utilities/dates";
 export default function CapacityDataPointInfo({ datapoint }) {
   return (
     <div>
-      <div className="flex flex-col justify-center align-center text-left">
-			<h2>Formatted Datapoint:</h2>
-				<table>
-          {/* <thead>
-            <tr>
-              <th colSpan="2" className="center">
-                Formatted Datapoint
-              </th>
-            </tr>
-          </thead> */}
-          <tbody>
-            <tr key="datapoint-info-terminal-from">
-              <td className="center">From</td>
-              <td>{datapoint.crossing_name.split("-")[0]}</td>
-            </tr>
-            <tr key="datapoint-info-terminal-to">
-              <td className="center">To</td>
-              <td className="right">{datapoint.crossing_name.split("-")[1]}</td>
-            </tr>
-            <tr key="datapoint-info-sailing-time">
-              <td className="center">Sailing Date/Time</td>
-              <td>
-                {dateFormat(datapoint.date_recorded)} at{" "}
-                {timeFormat(
-                  datapoint.date_of_sailing + " " + datapoint.time_of_sailing,
-                )}
-              </td>
-            </tr>
-            <tr key="datapoint-info-capacity">
-              <td className="center">Available Capacity</td>
-              <td className="center">{datapoint.percent_available} %</td>
-            </tr>
-            <tr key="datapoint-info-recorded-on">
-              <td className="center">Datapoint Recorded On</td>
-              <td>
-                {dateFormat(datapoint.date_recorded)} at{" "}
-                {timeFormat(
-                  datapoint.date_recorded + " " + datapoint.time_recorded,
-                )}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <h2>Raw Datapoint:</h2>
-        <div className="raw-datapoint" >
+      <div className="flex flex-col text-left justify-center align-middle w-full mx-auto">
+        <div className="shadow mx-auto w-screen max-w-2xl px-4 py-2 overflow-x-auto border-b border-gray-200 sm:rounded-lg">
+          <caption className="text-2xl text-center"></caption>
+
+          <div className="grid grid-cols-2 gap-y-2 space-y-2 align-middle divide-y-2 max-w-xl mx-auto mb-10 p-4 shadow-md">
+            <div className="col-span-2 text-center text-xl font-bold">
+              Formatted Datapoint
+            </div>
+            <div className="font-semibold">From</div>
+            <div>{datapoint.crossing_name.split("-")[0]}</div>
+
+            <div className="font-semibold">To</div>
+            <div>{datapoint.crossing_name.split("-")[1]}</div>
+
+            <div className="font-semibold">Sailing Date/Time</div>
+            <div>
+              {dateFormat(datapoint.date_recorded)} at{" "}
+              {timeFormat(
+                datapoint.date_of_sailing + " " + datapoint.time_of_sailing,
+              )}
+            </div>
+
+            <div className="font-semibold">Available Capacity</div>
+            <div>{datapoint.percent_available} %</div>
+
+            <div className="font-semibold">Datapoint Recorded On</div>
+            <div>
+              {dateFormat(datapoint.date_recorded)} at{" "}
+              {timeFormat(
+                datapoint.date_recorded + " " + datapoint.time_recorded,
+              )}
+            </div>
+          </div>
+        </div>
+        <h2 className="text-xl text-center font-bold">Raw Datapoint:</h2>
+        <div className="bg-gray-700 p-8 text-white max-w-full shadow-md">
           <Highlight className="json">
             {JSON.stringify(datapoint, null, 2)}
           </Highlight>

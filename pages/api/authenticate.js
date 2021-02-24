@@ -3,7 +3,7 @@
 export default async (req, res) => {
   
 	console.log();
-	if (req.body?.password === process.env.DASHBOARD_PASSWORD) {
+	if (req.body?.password === process.env.DASHBOARD_PASSWORD || req.body?.password === process.env.DEMO_DASHBOARD_PASSWORD) {
 		res.statusCode = 200
 	}
 	else {

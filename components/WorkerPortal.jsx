@@ -9,6 +9,7 @@ import { useBasicAuth } from "../hooks/useBasicAuth";
 import { useAlert } from "../hooks/useAlert";
 import { dateFormat, timeFormat } from "../utilities/dates";
 import { usePingServer } from "../hooks/usePingServer";
+import { Button } from "./Button";
 
 export default function WorkerPortal() {
   const [status, setStatus] = useState(null);
@@ -41,7 +42,7 @@ export default function WorkerPortal() {
     };
   }, []);
 
-  const getStatus = async (withAlert=false) => {
+  const getStatus = async (withAlert = false) => {
     // console.log("Getting status");
     if (!isAuthenticated || botOffline) {
       return false;
@@ -68,7 +69,7 @@ export default function WorkerPortal() {
         setBotOffline(false);
       }
     } catch (error) {
-      sendError("Error updating status: " + String(error));
+      // sendError("Error updating status: " + String(error));
       console.error("CUSTOM ERROR\n", error);
       sendError("Bot appears to be Offline. It could be in maintenaince.");
       setBotOffline(true);
@@ -110,7 +111,7 @@ export default function WorkerPortal() {
         },
       );
       if (res.status >= 200 && res.status < 300) {
-        sendAlert("Bot was started");
+        sendAlert("Single Test Running");
         const json = res.json();
         // console.log(json);
         await getStatus();
@@ -165,19 +166,16 @@ export default function WorkerPortal() {
     <div className="flex flex-row flex-wrap mx-2 my-3">
       <div className="flex flex-row justify-around flex-wrap align-stretch">
         <div className="flex flex-col justify- align-stretch ">
-          <h3 className="text-center">Bot Controls</h3>
-          <div className="flex flex-col align-center">
-            <div className="flex row flex-wrap justify-center">
-              <span className="alert white text-center text-small">
-                Ongoing: {status?.STARTED_JOBS?.length | "?"}
-              </span>
-              <span className="alert white text-center text-small">
-                Upcoming: {status?.SCHEDULED_JOBS?.length | "?"}
-              </span>
-              <span className="alert white text-center text-small">
-                Finished: {status?.FINISHED_JOBS?.length | "?"}
-              </span>
-            </div>
+          <div className="grid grid-cols-3 grid-rows-1">
+            <span className="alert white text-center text-small">
+              Ongoing: {status?.STARTED_JOBS?.length | "?"}
+            </span>
+            <span className="alert white text-center text-small">
+              Upcoming: {status?.SCHEDULED_JOBS?.length | "?"}
+            </span>
+            <span className="alert white text-center text-small">
+              Finished: {status?.FINISHED_JOBS?.length | "?"}
+            </span>
           </div>
           <InfoModal
             titleText={`Bot/Web Scraper Controls`}
@@ -186,131 +184,194 @@ export default function WorkerPortal() {
             disabled={!isAuthenticated}
             onOpen={async () => await getStatus()}
           >
-            <div className="flex flex-col justify-center align-center">
-              <span className="alert success text-large">
-                Status Last Updated: <strong>{statusLastUpdated}</strong>
-              </span>
-              <div className="flex flex-row flex-wrap justify-center my-2">
-                <button
+            <div className="flex flex-col justify-center align-middle">
+              <div className="flex row justify-center align-middle">
+                <Button
+                  color="white"
                   className="button-secondary my-2 mx-2"
-                  onClick={(e) => (getStatus(true))}
+                  onClick={(e) => getStatus(true)}
                 >
                   Refresh Status
-                </button>
-                <button className="button-success my-2 mx-2" onClick={startBot}>
+                </Button>
+                <span className="alert success text-large self-center">
+                  Status Last Updated: <strong>{statusLastUpdated}</strong>
+                </span>
+              </div>
+              <div className="flex flex-row flex-wrap justify-center m-4 py-4 ">
+                <Button
+                  color="green"
+                  className="button-success my-2 mx-2"
+                  onClick={startBot}
+                >
                   Start Bot
-                </button>
+                </Button>
 
-                <button className="button-warning my-2 mx-2" onClick={testBot}>
+                <Button
+                  color="blue"
+                  className="button-warning my-2 mx-2"
+                  onClick={testBot}
+                >
                   Run 1 Test
-                </button>
-                <button className="button-error my-2 mx-2" onClick={stopBot}>
+                </Button>
+                <Button
+                  color="red"
+                  className="button-error my-2 mx-2"
+                  onClick={stopBot}
+                >
                   Stop Bot
-                </button>
+                </Button>
               </div>
 
-              <span className="alert success text-large">
-                {/* <input
-                    type="text"
-                    name="statusUpdateFreq"
-                    id="statusUpdateFreq"
-                    value={botStatusUpdateFreq}
-                    onChange={(e) => setBotStatusUpdateFreq(Number(e.target.value))}
-                  /> */}
-              </span>
+              <div className="shadow mx-auto w-full max-w-2xl px-4 py-2 overflow-x-auto border-b border-gray-200 sm:rounded-lg">
+                <caption className="flex justify-center text-center">
+                  Running Jobs
+                </caption>
+                <table className="min-w-full divide-y divide-gray-200 table-auto">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Job ID
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Created At
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {status?.STARTED_JOBS?.length == 0 && (
+                      <tr
+                        key="noStartedJobs"
+                        className="text-center text-sm text-gray-900"
+                      >
+                        <td className="px-6 py-4 text-center" colSpan="2">
+                          No Running Jobs. Worker is Idle.
+                        </td>
+                      </tr>
+                    )}
+                    {status?.STARTED_JOBS?.map((job) => (
+                      <tr key={job.id}>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">{job.id}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">
+                            {timeFormat(job.created_at, true)}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
               <Divider className="mt-4" />
-              <table style={{ minWidth: 500 }}>
-                <thead>
-                  <tr>
-                    <th colSpan="2">Running Jobs</th>
-                  </tr>
-                  <tr>
-                    <th>Job ID</th>
-                    <th>Created At</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {status?.STARTED_JOBS?.length == 0 && (
-                    <tr key="noStartedJobs">
-                      <td className="center" colSpan="2">
-                        No Running Jobs. Worker is Idle.
-                      </td>
-                    </tr>
-                  )}
-                  {status?.STARTED_JOBS?.map((job) => (
-                    <tr key={job.id}>
-                      <td className="center">{job.id}</td>
-                      <td className="center">
-                        {timeFormat(job.created_at, true)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
 
-              <Divider  className="mt-4"/>
-
-              <table style={{ minWidth: 500 }}>
-                <thead>
-                  <tr>
-                    <th colSpan="2">Upcoming Jobs</th>
-                  </tr>
-                  <tr>
-                    <th>Job ID</th>
-                    <th>Will Run At</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {status?.SCHEDULED_JOBS?.length == 0 && (
-                    <tr key="noScheduledJobs">
-                      <td className="center" colSpan="2">
-                        No Scheduled Jobs
-                      </td>
+              <div className="shadow mx-auto w-full max-w-2xl px-4 py-2 overflow-x-auto border-b border-gray-200 sm:rounded-lg">
+                <caption className="flex justify-center text-center">
+                  Scheduled Jobs
+                </caption>
+                <table className="min-w-full divide-y divide-gray-200 table-auto">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Job ID
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Schedueled For
+                      </th>
                     </tr>
-                  )}
-                  {status?.SCHEDULED_JOBS?.map((job) => (
-                    <tr key={job.id}>
-                      <td className="center">{job.id}</td>
-                      <td className="center">
-                        {timeFormat(
-                          moment(job.created_at).add(1, "minute"),
-                          true,
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {status?.SCHEDULED_JOBS?.length == 0 && (
+                      <tr key="noStartedJobs">
+                        <td
+                          className="px-6 py-4 text-center text-sm text-gray-900"
+                          colSpan="2"
+                        >
+                          No Scheduled Jobs.
+                        </td>
+                      </tr>
+                    )}
+                    {status?.SCHEDULED_JOBS?.map((job) => (
+                      <tr key={job.id}>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">{job.id}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">
+                            {timeFormat(
+                              moment(job.created_at).add(1, "minute"),
+                              true,
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
               <Divider />
-              <table style={{ minWidth: 500 }}>
-                <thead>
-                  <tr>
-                    <th colSpan="2">Finished Jobs</th>
-                  </tr>
-                  <tr>
-                    <th>Job ID</th>
-                    <th>Finshed At</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {status?.FINISHED_JOBS?.length == 0 && (
-                    <tr key="noFinishedJobs">
-                      <td className="center" colSpan="2">
-                        No Finished Jobs
-                      </td>
+
+              <div className="shadow mx-auto w-full max-w-2xl px-4 py-2 overflow-x-auto border-b border-gray-200 sm:rounded-lg">
+                <caption className="flex justify-center text-center">
+                  Finished Jobs
+                </caption>
+                <table className="min-w-full divide-y divide-gray-200 table-auto">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Job ID
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Finished At
+                      </th>
                     </tr>
-                  )}
-                  {status?.FINISHED_JOBS?.map((job) => (
-                    <tr key={job.id}>
-                      <td className="center">{job.id}</td>
-                      <td className="center">
-                        {timeFormat(job.ended_at, true)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {status?.FINISHED_JOBS?.length == 0 && (
+                      <tr key="noStartedJobs">
+                        <td
+                          className="px-6 py-4 text-center text-sm text-gray-900"
+                          colSpan="2"
+                        >
+                          No Finished Jobs.
+                        </td>
+                      </tr>
+                    )}
+                    {status?.FINISHED_JOBS?.map((job) => (
+                      <tr key={job.id}>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">{job.id}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">
+                            {timeFormat(job.ended_at, true)}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
               <div className="my-4"></div>
             </div>

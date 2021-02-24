@@ -6,7 +6,8 @@ export default async (req, res) => {
 
   const variables = {
     name: req.query['name'],
-    dateOfSailing: req.query['dateOfSailing']
+    dateOfSailing: req.query['dateOfSailing'],
+    limit: Number.parseInt(req.query['limit'])
   }
 
   console.log("NAME: ", variables)

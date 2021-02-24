@@ -6,8 +6,6 @@ export default function DashboardPage() {
   const { isAuthenticated } = useBasicAuth();
 
   return (
-    <Layout>
-      <DashBoard />
-    </Layout>
+    <Layout>{isAuthenticated === false ? <LoginForm /> : <DashBoard />}</Layout>
   );
 }
