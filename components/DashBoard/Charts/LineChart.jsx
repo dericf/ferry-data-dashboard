@@ -5,6 +5,7 @@ import { timeFormat } from "../../../utilities/dates";
 
 export const LineChart = () => {
   const [barChartData, setBarChartData] = useState(null);
+  const [figure, setFigure] = useState()
   const { data, dataFilter } = useData();
   
   const reFormatData = () => {
@@ -33,6 +34,7 @@ export const LineChart = () => {
 
   useEffect(() => {
     setBarChartData(reFormatData());
+    console.log("Figure", figure);
   }, []);
   
   useEffect(() => {
@@ -56,15 +58,15 @@ export const LineChart = () => {
     },
   };
   return (
-    <div className="flex flex-col justify-center align-center overflow-x-auto px-4">
+    <div className="flex flex-col justify-center align-middle overflow-x-auto px-4">
       {barChartData && barChartData.length == 0 && (
-				<h2>No Results</h2>
+				<h2 className="text-center">No Results</h2>
 			)}
       {barChartData && barChartData.length > 0 && (
         <>
-          {dataFilter.crossing_from && (<h2>{dataFilter.crossing_from}</h2>)}
+          {dataFilter.crossing_from && (<h2 className="text-center">{dataFilter.crossing_from}</h2>)}
           {/* TODO: set the figure object so we can change properties dynamically */}
-          <Plot data={barChartData} layout={layout} />
+          <Plot data={barChartData} layout={layout} figure={figure} onFigureChange={(e) => setFigure(figure)} />
         </>
       )}
     </div>

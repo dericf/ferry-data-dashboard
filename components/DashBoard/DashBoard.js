@@ -15,7 +15,6 @@ import { useAlert } from "../../hooks/useAlert";
 import { useLoadingScreen } from "../../hooks/useLoadingScreen";
 import { useData } from "../../hooks/useData";
 import LoadingBackdrop from "../LoadingBackdrop";
-import AlertPopup from "../Alert";
 import { LogoutButton } from "../Auth/LogoutButton";
 import { DataVisualizer } from "./DataVisualizer";
 import { Filter } from "./Filter";

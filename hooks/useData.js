@@ -1,5 +1,6 @@
 import moment from "moment";
 import React, { useState, useContext, createContext, useEffect } from "react";
+import { DEFAULT_TERMINALS } from "../utilities/constants";
 import { useAlert } from "./useAlert";
 import { useBasicAuth } from "./useBasicAuth";
 import { useIsLoading } from "./useIsLoading";
@@ -22,10 +23,12 @@ export default function DataProvider({ children }) {
   const { loadingState, setLoadingState, initialLoadingState } = useIsLoading();
 
   const initialDataFilterValues = {
-    crossing_from: null,
+    crossing_from: DEFAULT_TERMINALS[0].value,
     crossing_to: null,
     sailing_date: new Date(),
     sailing_time: null,
+    limit: 10,
+    
   };
   // Used to populate the dropdowns etc.
   const initialFormData = {
@@ -57,6 +60,7 @@ export default function DataProvider({ children }) {
       crossing_to,
       sailing_date,
       sailing_time,
+      limit,
     } = dataFilter;
     const authInfo = encodeURIComponent(pwd);
     console.log("sailing_date", sailing_date);
@@ -65,6 +69,7 @@ export default function DataProvider({ children }) {
         new URLSearchParams({
           name: crossing_from,
           dateOfSailing: moment(sailing_date).format("yyyy-M-D"),
+          limit: limit !== null ? limit : 2,
         }),
       {
         headers: { "X-Password": authInfo },
@@ -84,8 +89,8 @@ export default function DataProvider({ children }) {
     // TODO: merge this with the new filtering
     // setLoading(true, "Loading Fresh Data");
 
-    setDataFilter(initialDataFilterValues)
-    await getLimitedData()
+    setDataFilter(initialDataFilterValues);
+    await getLimitedData();
   };
 
   const refreshData = async () => {
@@ -95,7 +100,7 @@ export default function DataProvider({ children }) {
     if (dataFilter.crossing_from !== "") {
       await getFilteredData();
     } else {
-      await getLimitedData()
+      await getLimitedData();
     }
   };
 
@@ -130,6 +135,7 @@ export default function DataProvider({ children }) {
         getFullData,
         structuredData,
         getFilteredData,
+        getLimitedData,
         dataFilter,
         setDataFilter,
         formData,
@@ -150,6 +156,7 @@ export const useData = () => {
     getFullData,
     structuredData,
     getFilteredData,
+    getLimitedData,
     dataFilter,
     setDataFilter,
     formData,
@@ -163,6 +170,7 @@ export const useData = () => {
     getFullData,
     structuredData,
     getFilteredData,
+    getLimitedData,
     dataFilter,
     setDataFilter,
     formData,

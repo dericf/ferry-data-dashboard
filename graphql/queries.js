@@ -4,7 +4,7 @@ export const GET_LIMITED_CAPACITY_DATA = gql`
   query GetCapacityData {
     capacity_data(
       order_by: { id: desc, crossing_name: asc, time_of_sailing: asc }
-      limit: 10
+      limit: 100
     ) {
       created_at
       crossing_name
@@ -61,10 +61,11 @@ export const GET_TERMINAL_BY_ID = gql`
 `;
 
 export const GET_FILTERED_CAPACITY_DATA = gql`
-  query GetFilteredData($name: String!, $dateOfSailing: date) {
+  query GetFilteredData($name: String!, $dateOfSailing: date, $limit: Int!) {
     capacity_data(
       order_by: { id: asc }
-      where: { crossing_name: { _eq: $name }, date_of_sailing: { _eq: $dateOfSailing } }
+      where: { crossing_name: { _eq: $name }, date_of_sailing: { _eq: $dateOfSailing } },
+      limit: $limit
     ) {
       id
       crossing_name

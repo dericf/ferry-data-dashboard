@@ -8,7 +8,7 @@ export default function CapacityDataPointInfo({ datapoint }) {
   return (
     <div>
       <div className="flex flex-col text-left justify-center align-middle w-full mx-auto">
-        <div lassName="shadow mx-auto w-screen max-w-2xl px-4 py-2 overflow-x-auto border-b border-gray-200 sm:rounded-lg">
+        <div className="shadow mx-auto w-screen max-w-2xl px-4 py-2 overflow-x-auto border-b border-gray-200 sm:rounded-lg">
           <caption className="text-2xl text-center"></caption>
 
           <div className="grid grid-cols-2 gap-y-2 space-y-2 align-middle divide-y-2 max-w-xl mx-auto mb-10 p-4 shadow-md">
