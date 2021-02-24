@@ -111,7 +111,7 @@ export default function WorkerPortal() {
         },
       );
       if (res.status >= 200 && res.status < 300) {
-        sendAlert("Bot was started");
+        sendAlert("Single Test Running");
         const json = res.json();
         // console.log(json);
         await getStatus();
