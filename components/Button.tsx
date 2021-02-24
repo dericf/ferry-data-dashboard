@@ -1,9 +1,18 @@
+type ButtonColor = "white" | "blue" | "green" | "red";
+
+interface Props {
+  color: ButtonColor;
+  loading: boolean;
+  className: string;
+  props: any;
+}
+
 export const Button = ({
   color = "white",
   loading = false,
   className = "",
   ...props
-}) => {
+}: Props) => {
   let colorClasses = "";
   switch (color) {
     case "blue":
