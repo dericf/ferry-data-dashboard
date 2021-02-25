@@ -19,11 +19,6 @@ const DataTable = () => {
     })();
   }, []);
 
-  if (loading === false && !data || data?.length == 0) {
-    return (
-      <h2 className="text-center">0 Records to show for the given filters</h2>
-    );
-  }
   // else
   return (
     <>
@@ -82,7 +77,12 @@ const DataTable = () => {
               </th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
+          <tbody class="bg-white divide-y divide-gray-200 border">
+            {(loading === false && !data || data?.length == 0) && (
+              <tr >
+              <td colSpan={9} className="text-center">0 records</td>
+              </tr>
+            )}
             {loading === true ? (
               <tr >
               <td colSpan={9} className="text-center"><div className="flex w-full justify-center align-middle"><LoadingSpinner /></div></td>
@@ -90,41 +90,41 @@ const DataTable = () => {
             ) : (
               data.slice(0, 10).map((row, index) => (
                 <tr key={row.id}>
-                  <td className="text-sm text-gray-900 text-right">{row.id}</td>
-                  <td className="text-sm text-gray-900 text-center">
-                    <div className="flex flex-row justify-center">
-                      <span>{String(row.crossing_name).split("-")[0]}</span>
+                  <td className="text-sm text-gray-900 text-right px-3 border-r">{row.id}</td>
+                  <td className="text-sm text-gray-900 text-left">
+                    <div className="flex flex-row justify-end">
+                      <span>{String(row.crossing_name).split("-")[0]}&nbsp;-&nbsp;</span>
                     </div>
                   </td>
-                  <td className="text-sm text-gray-900 text-center">
-                    <div className="flex flex-row justify-center">
+                  <td className="text-sm text-gray-900 px-3 text-left">
+                    <div className="flex flex-row justify-start">
                       <span>{String(row.crossing_name).split("-")[1]}</span>
                     </div>
                   </td>
                   <td
-                    className="text-sm text-gray-900 text-right"
+                    className="text-sm text-gray-900 px-3 text-right"
                     style={{ borderRight: "none" }}
                   >
                     {dateFormat(row.date_of_sailing)}
                   </td>
                   <td
-                    className="text-sm text-gray-900 text-right"
+                    className="text-sm text-gray-900 px-3 text-right"
                     style={{ borderLeft: "none" }}
                   >
                     {timeFormat(
                       row.date_of_sailing + " " + row.time_of_sailing,
                     )}
                   </td>
-                  <td className="text-sm text-gray-900 text-center">
+                  <td className="text-sm text-gray-900 px-3 text-center">
                     {row.percent_available} %
                   </td>
-                  <td className="text-sm text-gray-900 text-right">
+                  <td className="text-sm text-gray-900 px-3 text-right">
                     {dateFormat(row.date_recorded)}
                   </td>
-                  <td className="text-sm text-gray-900 text-right">
+                  <td className="text-sm text-gray-900 px-3 text-right">
                     {timeFormat(row.date_recorded + " " + row.time_recorded)}{" "}
                   </td>
-                  <td className="text-sm text-gray-900 text-right">
+                  <td className="text-sm text-gray-900 px-3 text-right">
                     <div
                       className="flex flex-row justify-center align-center"
                       style={{ width: "6rem" }}
@@ -143,6 +143,11 @@ const DataTable = () => {
               ))
             )}
           </tbody>
+          <tfoot >
+            <tr>
+              <td colSpan={9} className="text-center">Note: This table only displays the 10 most recent data points</td>
+            </tr>
+          </tfoot>
         </table>
       </div>
     </>
