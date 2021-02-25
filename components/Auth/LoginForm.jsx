@@ -17,7 +17,7 @@ export const LoginForm = () => {
   const { pingServer } = usePingServer();
 
   return (
-    <form className="flex flex-col p-8 bg-gray-50 mx-auto shadow-md" method="post" action="#">
+    <form className="flex flex-col p-8 bg-white mx-auto mt-6 rounded-md shadow-inner border " method="post" action="#">
       <input
         className={`input-basic text-center`}
         type="password"
