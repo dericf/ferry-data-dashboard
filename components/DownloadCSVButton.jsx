@@ -8,7 +8,7 @@ import { Button } from "./Button";
 import { LoadingText } from "./Loading/LoadingText";
 
 export default function DownloadCSVButton() {
-  const { isAuthenticated, pwd } = useBasicAuth();
+  const { isAuthenticated, isDemoUser, pwd } = useBasicAuth();
   const [csvData, setCsvData] = useState([]);
   const [disableDownload, setDisableDownload] = useState(true);
   const { setLoading } = useLoadingScreen();
@@ -26,6 +26,9 @@ export default function DownloadCSVButton() {
     setIsProcessing(true);
     e.preventDefault();
     sendInfo("Fetching Full Dataset. Please Wait.");
+    if(isDemoUser === true) {
+      sendInfo("Note: As a demo user you will receieve a limited data set.")
+    }
     // Fetch the dataset
     const authInfo = encodeURIComponent(pwd);
     const resp = await fetch(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/data/get-full-dataset`, {
