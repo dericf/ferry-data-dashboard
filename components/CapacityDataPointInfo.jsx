@@ -15,6 +15,7 @@ export default function CapacityDataPointInfo({ datapoint }) {
             <div className="col-span-2 text-center text-xl font-bold">
               Formatted Datapoint
             </div>
+            
             <div className="font-semibold">From</div>
             <div>{datapoint.crossing_name.split("-")[0]}</div>
 
@@ -41,8 +42,10 @@ export default function CapacityDataPointInfo({ datapoint }) {
             </div>
           </div>
         </div>
-        <h2 className="text-xl text-center font-bold">Raw Datapoint:</h2>
-        <div className="bg-gray-700 p-8 text-white max-w-full shadow-md">
+        <div className="col-span-2 text-center text-xl font-bold mt-4">
+              Raw Data Point
+            </div>
+        <div className="bg-gray-700 p-8 text-white mx-auto shadow-md">
           <Highlight className="json">
             {JSON.stringify(datapoint, null, 2)}
           </Highlight>

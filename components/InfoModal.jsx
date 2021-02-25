@@ -58,7 +58,7 @@ export default function InfoModal({
           style={{ height: "100vh" }}
         >
           {titleText && (
-            <div className="bg-blue-400 text-white m-0 py-4 px-2">
+            <div className="bg-blue-500 text-white m-0 py-4 px-2">
               <svg
                 className="w-4 h-4 hover:shadow-md cursor-pointer fixed right-4 top-4 z-50"
                 xmlns="http://www.w3.org/2000/svg"
