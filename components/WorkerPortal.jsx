@@ -21,8 +21,8 @@ export default function WorkerPortal() {
 
   const { pingServer } = usePingServer(setBotOffline);
 
-  const { isAuthenticated, pwd } = useBasicAuth();
-  const { sendAlert, sendError } = useAlert();
+  const { isAuthenticated, isDemoUser, pwd } = useBasicAuth();
+  const { sendAlert, sendInfo, sendError } = useAlert();
 
   useEffect(() => {
     let intervalId;
@@ -87,7 +87,11 @@ export default function WorkerPortal() {
         },
       );
       if (res.status >= 200 && res.status < 300) {
-        sendAlert("Bot was started");
+        if (isDemoUser === true) {
+          sendInfo("Note: A Demo user cannot affect the worker");
+        } else {
+          sendAlert("Bot was started");
+        }
         const json = res.json();
         // console.log(json);
         await getStatus();
@@ -111,7 +115,11 @@ export default function WorkerPortal() {
         },
       );
       if (res.status >= 200 && res.status < 300) {
-        sendAlert("Single Test Running");
+        if (isDemoUser === true) {
+          sendInfo("Note: A Demo user cannot affect the worker");
+        } else {
+          sendAlert("Single Test Running");
+        }
         const json = res.json();
         // console.log(json);
         await getStatus();
@@ -135,7 +143,11 @@ export default function WorkerPortal() {
         },
       );
       if (res.status >= 200 && res.status < 300) {
-        sendAlert("Bot was stopped.");
+        if (isDemoUser === true) {
+          sendInfo("Note: A Demo user cannot affect the worker");
+        } else {
+          sendAlert("Bot was stopped.");
+        }
         await getStatus();
       } else {
         sendError("Error. Bot could not be stopped.");
