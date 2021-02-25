@@ -13,7 +13,8 @@ export const initialBasicAuthValue = {
 export const BasicAuthContext = createContext(initialBasicAuthValue);
 
 export default function BasicAuthProvider({ children }) {
-  const [isAuthenticated, setisAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isDemoUser, setIsDemoUser] = useState(false);
   const [pwd, setPwd] = useState("");
   const { sendAlert, sendError } = useAlert();
   const { loadingState, setLoadingState, initialLoadingState } = useIsLoading();
@@ -27,24 +28,26 @@ export default function BasicAuthProvider({ children }) {
       body: JSON.stringify({ password: pwd }),
     });
     if (res.status >= 200 && res.status < 300) {
-			// const json = res.json()
-      setisAuthenticated(true);
-      sendAlert("You have been logged in");
+			const json = await res.json()
+      setIsDemoUser(json.isDemoUser)
+      setIsAuthenticated(true);
+      sendAlert(`You have been logged in ${json.isDemoUser === true ? "(As Demo user)" : ""}`);
     } else {
-      setisAuthenticated(false);
+      setIsAuthenticated(false);
       sendError("Wrong Password");
     }
   };
 
   const logout = () => {
     setPwd("");
-		setisAuthenticated(false);
+		setIsAuthenticated(false);
   };
 
   return (
     <BasicAuthContext.Provider
       value={{
         isAuthenticated,
+        isDemoUser,
         tryAuthenticateWithPassword,
         pwd,
         setPwd,
@@ -59,6 +62,7 @@ export default function BasicAuthProvider({ children }) {
 export const useBasicAuth = () => {
   const {
     isAuthenticated,
+    isDemoUser,
     tryAuthenticateWithPassword,
     pwd,
     setPwd,
@@ -66,6 +70,7 @@ export const useBasicAuth = () => {
   } = useContext(BasicAuthContext);
   return {
     isAuthenticated,
+    isDemoUser,
     tryAuthenticateWithPassword,
     pwd,
     setPwd,
